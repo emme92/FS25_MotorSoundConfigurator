@@ -1,0 +1,774 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<!--
+    Motor Sound Configurator dialog (opened with Alt+M in a motorized vehicle).
+    Structure and profiles follow the MessageDialog pattern; all base profiles exist in sdk/xmlDoku/guiProfiles.xml.
+    Root callbacks deliberately not named onOpen / onClose (project rule), the controller calls the base methods itself.
+
+    Layout (agreed with the user 2026-10-02, variant C): tab buttons on the left ("Sound", "Extra sounds") and the
+    "Hear original" toggle below them, rpm / load top right, the pages in the middle, help line and buttons below.
+    v0.11.2.0: rpm / load preview sliders in the left column between the tabs and "Hear original".
+    - Page "Sound": scope selector, then one row per parameter with a slider for the engine and one for the
+      transmission side by side.
+    - Page "Extra sounds": one row per layer group: choice of the sound (incl. "Off") and its volume.
+    - Page "Presets" (v0.13.0.0, third tab): one toggle button per preset; the preview block moved 42px down for the tab.
+    v0.15.0.0 (UI review 2026-10-03, variants D + C): page "Sound" split into "Sound" (volume, pitch, rpm character,
+    cabin & fan) and "Filter" (tone / presence in the cabin and outside), blocks with headers, the scope row is shared
+    by all pages (locked to "This model only" on "Extra sounds" / "Presets"), the current tab is light grey with a green
+    bar (green alone = active state), dialog 40px higher for the fourth tab.
+    v0.16.0.0: fifth tab "Engine swap" (user 2026-10-11), one toggle button per catalog engine; the preview block moved
+    36px down for the tab.
+    anchorTopCenter = pivot top center: x is the element's center relative to the dialog center, y its top edge.
+    Values use OptionSlider (extends MultiTextOptionElement: setTexts / setState / getState, onClick callback); its
+    own text is hidden, each slider has a value Text right of it, filled by the dialog Lua. Texts sit 8px lower than
+    the slider so they line up with the bar (slider height 36px, text height 20px).
+    Spacing (v0.11.1.0, dialog 1100px): the slider knob reaches about 15px beyond both ends of the 150px slider, so
+    labels end 30px left of a slider and value texts start 30px right of it.
+-->
+<GUI onOpen="onMscDialogOpen" onClose="onMscDialogClose">
+    <GuiElement profile="newLayer" />
+    <Bitmap profile="dialogFullscreenBg" id="dialogBg" />
+
+    <GuiElement profile="dialogBg" id="dialogElement" size="1100px 842px">
+        <ThreePartBitmap profile="fs25_dialogBgMiddle" />
+        <ThreePartBitmap profile="fs25_dialogBgTop" />
+        <ThreePartBitmap profile="fs25_dialogBgBottom" />
+
+        <GuiElement profile="fs25_dialogContentContainer">
+            <Text profile="fs25_dialogTitle" id="dialogTitleElement" position="0px -25px" text="$l10n_msc_title"/>
+            <Text profile="motorSoundCfgVehicleName" id="vehicleNameText" position="0px -62px" text=""/>
+
+            <!-- live rpm / load (top right): the fill bar is a child of the background bar (pivot top left at its
+                 left end) and is resized by the dialog Lua -->
+            <Text profile="motorSoundCfgLiveLabel" position="270px -58px" text="$l10n_msc_live_rpm"/>
+            <Bitmap profile="motorSoundCfgMeterBg" position="385px -64px">
+                <Bitmap profile="motorSoundCfgMeterFill" id="rpmMeterFill" position="0px 0px"/>
+            </Bitmap>
+            <Text profile="motorSoundCfgLiveValue" id="rpmValueText" position="500px -58px" text=""/>
+            <Text profile="motorSoundCfgLiveLabel" position="270px -82px" text="$l10n_msc_live_load"/>
+            <Bitmap profile="motorSoundCfgMeterBg" position="385px -88px">
+                <Bitmap profile="motorSoundCfgMeterFill" id="loadMeterFill" position="0px 0px"/>
+            </Bitmap>
+            <Text profile="motorSoundCfgLiveValue" id="loadValueText" position="500px -82px" text=""/>
+
+            <!-- tabs (current tab: light grey plus the green bar left of it) -->
+            <Button profile="motorSoundCfgTabButton" id="tabSoundButton" position="-440px -120px" text="$l10n_msc_tab_sound" onClick="onClickTabSound"/>
+            <Button profile="motorSoundCfgTabButton" id="tabOtherButton" position="-440px -162px" text="$l10n_msc_tab_other" onClick="onClickTabOther"/>
+            <Button profile="motorSoundCfgTabButton" id="tabFilterButton" position="-440px -204px" text="$l10n_msc_tab_filter" onClick="onClickTabFilter"/>
+            <Button profile="motorSoundCfgTabButton" id="tabLayersButton" position="-440px -246px" text="$l10n_msc_tab_layers" onClick="onClickTabLayers"/>
+            <Button profile="motorSoundCfgTabButton" id="tabPresetsButton" position="-440px -288px" text="$l10n_msc_tab_presets" onClick="onClickTabPresets"/>
+            <Button profile="motorSoundCfgTabButton" id="tabSwapButton" position="-440px -330px" text="$l10n_msc_tab_swap" onClick="onClickTabSwap"/>
+            <Bitmap profile="motorSoundCfgTabMarker" id="tabSoundMarker" position="-522px -120px"/>
+            <Bitmap profile="motorSoundCfgTabMarker" id="tabOtherMarker" position="-522px -162px"/>
+            <Bitmap profile="motorSoundCfgTabMarker" id="tabFilterMarker" position="-522px -204px"/>
+            <Bitmap profile="motorSoundCfgTabMarker" id="tabLayersMarker" position="-522px -246px"/>
+            <Bitmap profile="motorSoundCfgTabMarker" id="tabPresetsMarker" position="-522px -288px"/>
+            <Bitmap profile="motorSoundCfgTabMarker" id="tabSwapMarker" position="-522px -330px"/>
+
+            <!-- rpm / load preview (left column, 170px wide = -525 .. -355): label left and value right above each
+                 130px slider, so the knob (15px beyond the ends) stays inside the column. v0.16.0.0: 36px lower for the
+                 fifth tab, "Hear original" 11px lower (ends 8px above the separator line). v0.19.0.0: 42px lower for the
+                 sixth tab "Other sounds", the dialog 42px higher -->
+            <Text profile="motorSoundCfgPreviewHeader" position="-440px -382px" text="$l10n_msc_preview"/>
+            <Text profile="motorSoundCfgPreviewLabel" position="-440px -412px" text="$l10n_msc_live_rpm"/>
+            <Text profile="motorSoundCfgPreviewValue" id="previewRpmValue" position="-440px -412px" text=""/>
+            <OptionSlider profile="motorSoundCfgSliderNarrow" id="previewRpmOption" position="-440px -430px" onClick="onPreviewRpmChanged"/>
+            <Text profile="motorSoundCfgPreviewLabel" position="-440px -477px" text="$l10n_msc_live_load"/>
+            <Text profile="motorSoundCfgPreviewValue" id="previewLoadValue" position="-440px -477px" text=""/>
+            <OptionSlider profile="motorSoundCfgSliderNarrow" id="previewLoadOption" position="-440px -495px" onClick="onPreviewLoadChanged"/>
+            <!-- one button for both preview values: back to live (user 2026-10-02) -->
+            <Button profile="motorSoundCfgToggleButton" id="previewLiveButton" position="-440px -547px" text="$l10n_msc_preview_reset" onClick="onClickPreviewLive"/>
+
+            <Button profile="motorSoundCfgToggleButton" id="originalButton" position="-440px -595px" text="$l10n_msc_original_off" onClick="onClickOriginal"/>
+            <Bitmap profile="motorSoundCfgSeparatorVertical" position="-335px -115px"/>
+
+            <!-- scope, shared by all pages; locked to "This model only" on "Extra sounds" and "Presets", hidden on
+                 "Engine swap" (its volume row takes the place) -->
+            <Text profile="motorSoundCfgLabel" id="scopeLabel" position="-215px -125px" text="$l10n_msc_scope"/>
+            <MultiTextOption profile="motorSoundCfgOption" id="scopeOption" position="65px -120px" onClick="onScopeChanged"/>
+
+            <!-- page "Sound": block "Basic sound" (engine and transmission side by side) and block "Cabin & fan".
+                 v0.18.1.0 (user 2026-10-15): every column has its own row labels (before one label column on the left,
+                 the transmission sliders were hard to match); a label is hidden with its slider (updateSoundRows) -->
+            <GuiElement profile="emptyPanel" id="soundPage">
+                <Text profile="motorSoundCfgBlockHeader" position="-290px -165px" text="$l10n_msc_block_basic"/>
+                <Text profile="motorSoundCfgColumnHeader" id="soundMotorHeader" position="-48px -165px" text="$l10n_msc_category_motor"/>
+                <Text profile="motorSoundCfgColumnHeader" id="soundGearboxHeader" position="374px -165px" text="$l10n_msc_category_gearbox"/>
+
+                <Text profile="motorSoundCfgRowLabel" id="motor_volumeLabel" position="-265px -203px" text="$l10n_msc_param_volume"/>
+                <OptionSlider profile="motorSoundCfgSliderWide" id="motor_volumeOption" position="-85px -195px" onClick="onChanged_motor_volume"/>
+                <Text profile="motorSoundCfgValue" id="motor_volumeValue" position="70px -203px" text=""/>
+                <Text profile="motorSoundCfgRowLabel" id="gearbox_volumeLabel" position="157px -203px" text="$l10n_msc_param_volume"/>
+                <OptionSlider profile="motorSoundCfgSliderWide" id="gearbox_volumeOption" position="337px -195px" onClick="onChanged_gearbox_volume"/>
+                <Text profile="motorSoundCfgValue" id="gearbox_volumeValue" position="492px -203px" text=""/>
+
+                <Text profile="motorSoundCfgRowLabel" id="motor_pitchLabel" position="-265px -245px" text="$l10n_msc_param_pitch"/>
+                <OptionSlider profile="motorSoundCfgSliderWide" id="motor_pitchOption" position="-85px -237px" onClick="onChanged_motor_pitch"/>
+                <Text profile="motorSoundCfgValue" id="motor_pitchValue" position="70px -245px" text=""/>
+                <Text profile="motorSoundCfgRowLabel" id="gearbox_pitchLabel" position="157px -245px" text="$l10n_msc_param_pitch"/>
+                <OptionSlider profile="motorSoundCfgSliderWide" id="gearbox_pitchOption" position="337px -237px" onClick="onChanged_gearbox_pitch"/>
+                <Text profile="motorSoundCfgValue" id="gearbox_pitchValue" position="492px -245px" text=""/>
+
+                <Text profile="motorSoundCfgRowLabel" id="motor_rpmLabel" position="-265px -287px" text="$l10n_msc_param_rpm"/>
+                <OptionSlider profile="motorSoundCfgSliderWide" id="motor_rpmOption" position="-85px -279px" onClick="onChanged_motor_rpm"/>
+                <Text profile="motorSoundCfgValue" id="motor_rpmValue" position="70px -287px" text=""/>
+                <Text profile="motorSoundCfgRowLabel" id="gearbox_rpmLabel" position="157px -287px" text="$l10n_msc_param_rpm"/>
+                <OptionSlider profile="motorSoundCfgSliderWide" id="gearbox_rpmOption" position="337px -279px" onClick="onChanged_gearbox_rpm"/>
+                <Text profile="motorSoundCfgValue" id="gearbox_rpmValue" position="492px -287px" text=""/>
+            </GuiElement>
+
+            <!-- page "Other sounds" (v0.19.0.0, user 2026-10-19), one list in one grid: names left (-320 .. -130), then up
+                 to three cells (slider 110px, value 20px right of it, every 213px; a cell without such a sound shows "-"
+                 below its column header). Blocks, top to bottom: "Vehicle" (cabin & fan, parts rattle, work unit,
+                 discharge & filling), "Implements" (one row per attached model with work / drive sounds) and "Trailers"
+                 (one row per attached model with only driving rattle); "All vehicles" shows one global row per block.
+                 Rows and columns without sounds are left out, the blocks follow each other without gaps
+                 (updateTables moves them from the template positions below) -->
+            <GuiElement profile="emptyPanel" id="otherPage">
+                <Text profile="motorSoundCfgBlockHeaderLeft" id="vehicleBlockHeader" position="-170px -165px" text="$l10n_msc_block_vehicle"/>
+                <Text profile="motorSoundCfgColumnHeader" id="vehicleVolumeHeader" position="-50px -165px" text="$l10n_msc_param_volume"/>
+                <Text profile="motorSoundCfgTableName" id="cabin_volumeLabel" position="-225px -203px" text="$l10n_msc_category_cabin"/>
+                <OptionSlider profile="motorSoundCfgSliderTable" id="cabin_volumeOption" position="-50px -195px" onClick="onChanged_cabin_volume"/>
+                <Text profile="motorSoundCfgValue" id="cabin_volumeValue" position="75px -203px" text=""/>
+                <Text profile="motorSoundCfgTableName" id="rattle_volumeLabel" position="-225px -245px" text="$l10n_msc_category_rattle"/>
+                <OptionSlider profile="motorSoundCfgSliderTable" id="rattle_volumeOption" position="-50px -237px" onClick="onChanged_rattle_volume"/>
+                <Text profile="motorSoundCfgValue" id="rattle_volumeValue" position="75px -245px" text=""/>
+                <Text profile="motorSoundCfgTableName" id="work_volumeLabel" position="-225px -287px" text="$l10n_msc_category_work"/>
+                <OptionSlider profile="motorSoundCfgSliderTable" id="work_volumeOption" position="-50px -279px" onClick="onChanged_work_volume"/>
+                <Text profile="motorSoundCfgValue" id="work_volumeValue" position="75px -287px" text=""/>
+                <Text profile="motorSoundCfgTableName" id="discharge_volumeLabel" position="-225px -329px" text="$l10n_msc_category_discharge"/>
+                <OptionSlider profile="motorSoundCfgSliderTable" id="discharge_volumeOption" position="-50px -321px" onClick="onChanged_discharge_volume"/>
+                <Text profile="motorSoundCfgValue" id="discharge_volumeValue" position="75px -329px" text=""/>
+
+                <!-- blocks "Implements" (work / drive sounds, driving rattle column only when needed) and "Trailers" (only
+                     driving rattle), v0.19.0.0 (user 2026-10-19). Both lie at the same template position below the
+                     vehicle block; updateTables moves them under each other -->
+                <Text profile="motorSoundCfgBlockHeaderLeft" id="implementBlockHeader" position="-170px -380px" text="$l10n_msc_block_implements"/>
+                <Text profile="motorSoundCfgColumnHeader" id="implementWorkHeader" position="-50px -380px" text="$l10n_msc_category_implementWork"/>
+                <Text profile="motorSoundCfgColumnHeader" id="implementDriveHeader" position="163px -380px" text="$l10n_msc_category_implementDrive"/>
+                <Text profile="motorSoundCfgColumnHeader" id="implementRattleHeader" position="376px -380px" text="$l10n_msc_category_implementRattle"/>
+
+                <Text profile="motorSoundCfgTableName" id="implRow1Name" position="-225px -418px" text=""/>
+                <OptionSlider profile="motorSoundCfgSliderTable" id="implRow1WorkOption" position="-50px -410px" onClick="onTableChanged_1_1_1"/>
+                <Text profile="motorSoundCfgValue" id="implRow1WorkValue" position="75px -418px" text=""/>
+                <Text profile="motorSoundCfgTableDash" id="implRow1WorkDash" position="-50px -418px" text="-"/>
+                <OptionSlider profile="motorSoundCfgSliderTable" id="implRow1DriveOption" position="163px -410px" onClick="onTableChanged_1_1_2"/>
+                <Text profile="motorSoundCfgValue" id="implRow1DriveValue" position="288px -418px" text=""/>
+                <Text profile="motorSoundCfgTableDash" id="implRow1DriveDash" position="163px -418px" text="-"/>
+                <OptionSlider profile="motorSoundCfgSliderTable" id="implRow1RattleOption" position="376px -410px" onClick="onTableChanged_1_1_3"/>
+                <Text profile="motorSoundCfgValue" id="implRow1RattleValue" position="501px -418px" text=""/>
+                <Text profile="motorSoundCfgTableDash" id="implRow1RattleDash" position="376px -418px" text="-"/>
+
+                <Text profile="motorSoundCfgTableName" id="implRow2Name" position="-225px -460px" text=""/>
+                <OptionSlider profile="motorSoundCfgSliderTable" id="implRow2WorkOption" position="-50px -452px" onClick="onTableChanged_1_2_1"/>
+                <Text profile="motorSoundCfgValue" id="implRow2WorkValue" position="75px -460px" text=""/>
+                <Text profile="motorSoundCfgTableDash" id="implRow2WorkDash" position="-50px -460px" text="-"/>
+                <OptionSlider profile="motorSoundCfgSliderTable" id="implRow2DriveOption" position="163px -452px" onClick="onTableChanged_1_2_2"/>
+                <Text profile="motorSoundCfgValue" id="implRow2DriveValue" position="288px -460px" text=""/>
+                <Text profile="motorSoundCfgTableDash" id="implRow2DriveDash" position="163px -460px" text="-"/>
+                <OptionSlider profile="motorSoundCfgSliderTable" id="implRow2RattleOption" position="376px -452px" onClick="onTableChanged_1_2_3"/>
+                <Text profile="motorSoundCfgValue" id="implRow2RattleValue" position="501px -460px" text=""/>
+                <Text profile="motorSoundCfgTableDash" id="implRow2RattleDash" position="376px -460px" text="-"/>
+
+                <Text profile="motorSoundCfgTableName" id="implRow3Name" position="-225px -502px" text=""/>
+                <OptionSlider profile="motorSoundCfgSliderTable" id="implRow3WorkOption" position="-50px -494px" onClick="onTableChanged_1_3_1"/>
+                <Text profile="motorSoundCfgValue" id="implRow3WorkValue" position="75px -502px" text=""/>
+                <Text profile="motorSoundCfgTableDash" id="implRow3WorkDash" position="-50px -502px" text="-"/>
+                <OptionSlider profile="motorSoundCfgSliderTable" id="implRow3DriveOption" position="163px -494px" onClick="onTableChanged_1_3_2"/>
+                <Text profile="motorSoundCfgValue" id="implRow3DriveValue" position="288px -502px" text=""/>
+                <Text profile="motorSoundCfgTableDash" id="implRow3DriveDash" position="163px -502px" text="-"/>
+                <OptionSlider profile="motorSoundCfgSliderTable" id="implRow3RattleOption" position="376px -494px" onClick="onTableChanged_1_3_3"/>
+                <Text profile="motorSoundCfgValue" id="implRow3RattleValue" position="501px -502px" text=""/>
+                <Text profile="motorSoundCfgTableDash" id="implRow3RattleDash" position="376px -502px" text="-"/>
+
+                <Text profile="motorSoundCfgTableName" id="implRow4Name" position="-225px -544px" text=""/>
+                <OptionSlider profile="motorSoundCfgSliderTable" id="implRow4WorkOption" position="-50px -536px" onClick="onTableChanged_1_4_1"/>
+                <Text profile="motorSoundCfgValue" id="implRow4WorkValue" position="75px -544px" text=""/>
+                <Text profile="motorSoundCfgTableDash" id="implRow4WorkDash" position="-50px -544px" text="-"/>
+                <OptionSlider profile="motorSoundCfgSliderTable" id="implRow4DriveOption" position="163px -536px" onClick="onTableChanged_1_4_2"/>
+                <Text profile="motorSoundCfgValue" id="implRow4DriveValue" position="288px -544px" text=""/>
+                <Text profile="motorSoundCfgTableDash" id="implRow4DriveDash" position="163px -544px" text="-"/>
+                <OptionSlider profile="motorSoundCfgSliderTable" id="implRow4RattleOption" position="376px -536px" onClick="onTableChanged_1_4_3"/>
+                <Text profile="motorSoundCfgValue" id="implRow4RattleValue" position="501px -544px" text=""/>
+                <Text profile="motorSoundCfgTableDash" id="implRow4RattleDash" position="376px -544px" text="-"/>
+
+                <Text profile="motorSoundCfgTableName" id="implRow5Name" position="-225px -586px" text=""/>
+                <OptionSlider profile="motorSoundCfgSliderTable" id="implRow5WorkOption" position="-50px -578px" onClick="onTableChanged_1_5_1"/>
+                <Text profile="motorSoundCfgValue" id="implRow5WorkValue" position="75px -586px" text=""/>
+                <Text profile="motorSoundCfgTableDash" id="implRow5WorkDash" position="-50px -586px" text="-"/>
+                <OptionSlider profile="motorSoundCfgSliderTable" id="implRow5DriveOption" position="163px -578px" onClick="onTableChanged_1_5_2"/>
+                <Text profile="motorSoundCfgValue" id="implRow5DriveValue" position="288px -586px" text=""/>
+                <Text profile="motorSoundCfgTableDash" id="implRow5DriveDash" position="163px -586px" text="-"/>
+                <OptionSlider profile="motorSoundCfgSliderTable" id="implRow5RattleOption" position="376px -578px" onClick="onTableChanged_1_5_3"/>
+                <Text profile="motorSoundCfgValue" id="implRow5RattleValue" position="501px -586px" text=""/>
+                <Text profile="motorSoundCfgTableDash" id="implRow5RattleDash" position="376px -586px" text="-"/>
+
+                <Text profile="motorSoundCfgBlockHeaderLeft" id="trailerBlockHeader" position="-170px -380px" text="$l10n_msc_block_trailers"/>
+                <Text profile="motorSoundCfgColumnHeader" id="trailerRattleHeader" position="-50px -380px" text="$l10n_msc_category_implementRattle"/>
+
+                <Text profile="motorSoundCfgTableName" id="trailerRow1Name" position="-225px -418px" text=""/>
+                <OptionSlider profile="motorSoundCfgSliderTable" id="trailerRow1RattleOption" position="-50px -410px" onClick="onTableChanged_2_1_1"/>
+                <Text profile="motorSoundCfgValue" id="trailerRow1RattleValue" position="75px -418px" text=""/>
+                <Text profile="motorSoundCfgTableDash" id="trailerRow1RattleDash" position="-50px -418px" text="-"/>
+
+                <Text profile="motorSoundCfgTableName" id="trailerRow2Name" position="-225px -460px" text=""/>
+                <OptionSlider profile="motorSoundCfgSliderTable" id="trailerRow2RattleOption" position="-50px -452px" onClick="onTableChanged_2_2_1"/>
+                <Text profile="motorSoundCfgValue" id="trailerRow2RattleValue" position="75px -460px" text=""/>
+                <Text profile="motorSoundCfgTableDash" id="trailerRow2RattleDash" position="-50px -460px" text="-"/>
+
+                <Text profile="motorSoundCfgTableName" id="trailerRow3Name" position="-225px -502px" text=""/>
+                <OptionSlider profile="motorSoundCfgSliderTable" id="trailerRow3RattleOption" position="-50px -494px" onClick="onTableChanged_2_3_1"/>
+                <Text profile="motorSoundCfgValue" id="trailerRow3RattleValue" position="75px -502px" text=""/>
+                <Text profile="motorSoundCfgTableDash" id="trailerRow3RattleDash" position="-50px -502px" text="-"/>
+
+                <Text profile="motorSoundCfgTableName" id="trailerRow4Name" position="-225px -544px" text=""/>
+                <OptionSlider profile="motorSoundCfgSliderTable" id="trailerRow4RattleOption" position="-50px -536px" onClick="onTableChanged_2_4_1"/>
+                <Text profile="motorSoundCfgValue" id="trailerRow4RattleValue" position="75px -544px" text=""/>
+                <Text profile="motorSoundCfgTableDash" id="trailerRow4RattleDash" position="-50px -544px" text="-"/>
+
+                <Text profile="motorSoundCfgTableName" id="trailerRow5Name" position="-225px -586px" text=""/>
+                <OptionSlider profile="motorSoundCfgSliderTable" id="trailerRow5RattleOption" position="-50px -578px" onClick="onTableChanged_2_5_1"/>
+                <Text profile="motorSoundCfgValue" id="trailerRow5RattleValue" position="75px -586px" text=""/>
+                <Text profile="motorSoundCfgTableDash" id="trailerRow5RattleDash" position="-50px -586px" text="-"/>
+            </GuiElement>
+
+            <!-- page "Filter": tone and presence in the cabin and outside, engine and transmission side by side, row
+                 labels per column like the "Sound" page. v0.20.0.0: cabin openness (parameter indoorDamping, shown
+                 inverted) as first cabin row, tone and presence below it for fine tuning; outside block 42px lower -->
+            <GuiElement profile="emptyPanel" id="filterPage">
+                <Text profile="motorSoundCfgBlockHeader" id="indoorBlockHeader" position="-290px -165px" text="$l10n_msc_block_indoor"/>
+                <Text profile="motorSoundCfgColumnHeader" id="filterMotorHeader" position="-48px -165px" text="$l10n_msc_category_motor"/>
+                <Text profile="motorSoundCfgColumnHeader" id="filterGearboxHeader" position="374px -165px" text="$l10n_msc_category_gearbox"/>
+
+                <Text profile="motorSoundCfgRowLabel" id="motor_indoorDampingLabel" position="-265px -203px" text="$l10n_msc_label_openness"/>
+                <OptionSlider profile="motorSoundCfgSliderWide" id="motor_indoorDampingOption" position="-85px -195px" onClick="onChanged_motor_indoorDamping"/>
+                <Text profile="motorSoundCfgValue" id="motor_indoorDampingValue" position="70px -203px" text=""/>
+                <Text profile="motorSoundCfgRowLabel" id="gearbox_indoorDampingLabel" position="157px -203px" text="$l10n_msc_label_openness"/>
+                <OptionSlider profile="motorSoundCfgSliderWide" id="gearbox_indoorDampingOption" position="337px -195px" onClick="onChanged_gearbox_indoorDamping"/>
+                <Text profile="motorSoundCfgValue" id="gearbox_indoorDampingValue" position="492px -203px" text=""/>
+
+                <Text profile="motorSoundCfgRowLabel" id="motor_cutoffIndoorLabel" position="-265px -245px" text="$l10n_msc_label_tone"/>
+                <OptionSlider profile="motorSoundCfgSliderWide" id="motor_cutoffIndoorOption" position="-85px -237px" onClick="onChanged_motor_cutoffIndoor"/>
+                <Text profile="motorSoundCfgValue" id="motor_cutoffIndoorValue" position="70px -245px" text=""/>
+                <Text profile="motorSoundCfgRowLabel" id="gearbox_cutoffIndoorLabel" position="157px -245px" text="$l10n_msc_label_tone"/>
+                <OptionSlider profile="motorSoundCfgSliderWide" id="gearbox_cutoffIndoorOption" position="337px -237px" onClick="onChanged_gearbox_cutoffIndoor"/>
+                <Text profile="motorSoundCfgValue" id="gearbox_cutoffIndoorValue" position="492px -245px" text=""/>
+
+                <Text profile="motorSoundCfgRowLabel" id="motor_gainIndoorLabel" position="-265px -287px" text="$l10n_msc_label_presence"/>
+                <OptionSlider profile="motorSoundCfgSliderWide" id="motor_gainIndoorOption" position="-85px -279px" onClick="onChanged_motor_gainIndoor"/>
+                <Text profile="motorSoundCfgValue" id="motor_gainIndoorValue" position="70px -287px" text=""/>
+                <Text profile="motorSoundCfgRowLabel" id="gearbox_gainIndoorLabel" position="157px -287px" text="$l10n_msc_label_presence"/>
+                <OptionSlider profile="motorSoundCfgSliderWide" id="gearbox_gainIndoorOption" position="337px -279px" onClick="onChanged_gearbox_gainIndoor"/>
+                <Text profile="motorSoundCfgValue" id="gearbox_gainIndoorValue" position="492px -287px" text=""/>
+
+                <Text profile="motorSoundCfgBlockHeader" id="outdoorBlockHeader" position="-290px -340px" text="$l10n_msc_block_outdoor"/>
+
+                <Text profile="motorSoundCfgRowLabel" id="motor_cutoffOutdoorLabel" position="-265px -378px" text="$l10n_msc_label_tone"/>
+                <OptionSlider profile="motorSoundCfgSliderWide" id="motor_cutoffOutdoorOption" position="-85px -370px" onClick="onChanged_motor_cutoffOutdoor"/>
+                <Text profile="motorSoundCfgValue" id="motor_cutoffOutdoorValue" position="70px -378px" text=""/>
+                <Text profile="motorSoundCfgRowLabel" id="gearbox_cutoffOutdoorLabel" position="157px -378px" text="$l10n_msc_label_tone"/>
+                <OptionSlider profile="motorSoundCfgSliderWide" id="gearbox_cutoffOutdoorOption" position="337px -370px" onClick="onChanged_gearbox_cutoffOutdoor"/>
+                <Text profile="motorSoundCfgValue" id="gearbox_cutoffOutdoorValue" position="492px -378px" text=""/>
+
+                <Text profile="motorSoundCfgRowLabel" id="motor_gainOutdoorLabel" position="-265px -420px" text="$l10n_msc_label_presence"/>
+                <OptionSlider profile="motorSoundCfgSliderWide" id="motor_gainOutdoorOption" position="-85px -412px" onClick="onChanged_motor_gainOutdoor"/>
+                <Text profile="motorSoundCfgValue" id="motor_gainOutdoorValue" position="70px -420px" text=""/>
+                <Text profile="motorSoundCfgRowLabel" id="gearbox_gainOutdoorLabel" position="157px -420px" text="$l10n_msc_label_presence"/>
+                <OptionSlider profile="motorSoundCfgSliderWide" id="gearbox_gainOutdoorOption" position="337px -412px" onClick="onChanged_gearbox_gainOutdoor"/>
+                <Text profile="motorSoundCfgValue" id="gearbox_gainOutdoorValue" position="492px -420px" text=""/>
+
+                <!-- v0.20.0.0 (user 2026-10-19): read-only "This vehicle", how muffled engine and transmission are in the
+                     cabin and outside, original and now, in words (updateFilterInfo); hidden without a vehicle -->
+                <Text profile="motorSoundCfgBlockHeader" id="filterInfoHeader" position="-290px -472px" text="$l10n_msc_block_filterInfo"/>
+                <Text profile="motorSoundCfgRowLabel" id="filterInfoMotorIndoorLabel" position="-265px -510px" text="$l10n_msc_filterInfo_indoor"/>
+                <Text profile="motorSoundCfgInfoText" id="filterInfoMotorIndoor" position="-45px -510px" text=""/>
+                <Text profile="motorSoundCfgRowLabel" id="filterInfoMotorOutdoorLabel" position="-265px -545px" text="$l10n_msc_filterInfo_outdoor"/>
+                <Text profile="motorSoundCfgInfoText" id="filterInfoMotorOutdoor" position="-45px -545px" text=""/>
+                <Text profile="motorSoundCfgRowLabel" id="filterInfoGearboxIndoorLabel" position="157px -510px" text="$l10n_msc_filterInfo_indoor"/>
+                <Text profile="motorSoundCfgInfoText" id="filterInfoGearboxIndoor" position="377px -510px" text=""/>
+                <Text profile="motorSoundCfgRowLabel" id="filterInfoGearboxOutdoorLabel" position="157px -545px" text="$l10n_msc_filterInfo_outdoor"/>
+                <Text profile="motorSoundCfgInfoText" id="filterInfoGearboxOutdoor" position="377px -545px" text=""/>
+            </GuiElement>
+
+            <!-- page "Extra sounds": one row per layer group (rows without group are hidden) -->
+            <GuiElement profile="emptyPanel" id="layerPage">
+                <Text profile="motorSoundCfgColumnHeader" position="55px -165px" text="$l10n_msc_layer_column_sound"/>
+                <Text profile="motorSoundCfgColumnHeader" position="360px -165px" text="$l10n_msc_layer_column_volume"/>
+
+                <Text profile="motorSoundCfgLayerLabel" id="layerRow1Label" position="-250px -203px" text=""/>
+                <MultiTextOption profile="motorSoundCfgLayerChoice" id="layerRow1Choice" position="55px -198px" onClick="onLayerChoiceChanged_1"/>
+                <OptionSlider profile="motorSoundCfgSliderNarrow" id="layerRow1Volume" position="360px -195px" onClick="onLayerVolumeChanged_1"/>
+                <Text profile="motorSoundCfgValue" id="layerRow1Value" position="505px -203px" text=""/>
+
+                <Text profile="motorSoundCfgLayerLabel" id="layerRow2Label" position="-250px -245px" text=""/>
+                <MultiTextOption profile="motorSoundCfgLayerChoice" id="layerRow2Choice" position="55px -240px" onClick="onLayerChoiceChanged_2"/>
+                <OptionSlider profile="motorSoundCfgSliderNarrow" id="layerRow2Volume" position="360px -237px" onClick="onLayerVolumeChanged_2"/>
+                <Text profile="motorSoundCfgValue" id="layerRow2Value" position="505px -245px" text=""/>
+
+                <Text profile="motorSoundCfgLayerLabel" id="layerRow3Label" position="-250px -287px" text=""/>
+                <MultiTextOption profile="motorSoundCfgLayerChoice" id="layerRow3Choice" position="55px -282px" onClick="onLayerChoiceChanged_3"/>
+                <OptionSlider profile="motorSoundCfgSliderNarrow" id="layerRow3Volume" position="360px -279px" onClick="onLayerVolumeChanged_3"/>
+                <Text profile="motorSoundCfgValue" id="layerRow3Value" position="505px -287px" text=""/>
+
+                <Text profile="motorSoundCfgLayerLabel" id="layerRow4Label" position="-250px -329px" text=""/>
+                <MultiTextOption profile="motorSoundCfgLayerChoice" id="layerRow4Choice" position="55px -324px" onClick="onLayerChoiceChanged_4"/>
+                <OptionSlider profile="motorSoundCfgSliderNarrow" id="layerRow4Volume" position="360px -321px" onClick="onLayerVolumeChanged_4"/>
+                <Text profile="motorSoundCfgValue" id="layerRow4Value" position="505px -329px" text=""/>
+
+                <Text profile="motorSoundCfgLayerLabel" id="layerRow5Label" position="-250px -371px" text=""/>
+                <MultiTextOption profile="motorSoundCfgLayerChoice" id="layerRow5Choice" position="55px -366px" onClick="onLayerChoiceChanged_5"/>
+                <OptionSlider profile="motorSoundCfgSliderNarrow" id="layerRow5Volume" position="360px -363px" onClick="onLayerVolumeChanged_5"/>
+                <Text profile="motorSoundCfgValue" id="layerRow5Value" position="505px -371px" text=""/>
+
+                <Text profile="motorSoundCfgLayerLabel" id="layerRow6Label" position="-250px -413px" text=""/>
+                <MultiTextOption profile="motorSoundCfgLayerChoice" id="layerRow6Choice" position="55px -408px" onClick="onLayerChoiceChanged_6"/>
+                <OptionSlider profile="motorSoundCfgSliderNarrow" id="layerRow6Volume" position="360px -405px" onClick="onLayerVolumeChanged_6"/>
+                <Text profile="motorSoundCfgValue" id="layerRow6Value" position="505px -413px" text=""/>
+
+                <Text profile="motorSoundCfgLayerLabel" id="layerRow7Label" position="-250px -455px" text=""/>
+                <MultiTextOption profile="motorSoundCfgLayerChoice" id="layerRow7Choice" position="55px -450px" onClick="onLayerChoiceChanged_7"/>
+                <OptionSlider profile="motorSoundCfgSliderNarrow" id="layerRow7Volume" position="360px -447px" onClick="onLayerVolumeChanged_7"/>
+                <Text profile="motorSoundCfgValue" id="layerRow7Value" position="505px -455px" text=""/>
+
+                <!-- row 8 (v0.18.0.0; row 9 of the turbo group removed in v0.18.1.0) -->
+                <Text profile="motorSoundCfgLayerLabel" id="layerRow8Label" position="-250px -497px" text=""/>
+                <MultiTextOption profile="motorSoundCfgLayerChoice" id="layerRow8Choice" position="55px -492px" onClick="onLayerChoiceChanged_8"/>
+                <OptionSlider profile="motorSoundCfgSliderNarrow" id="layerRow8Volume" position="360px -489px" onClick="onLayerVolumeChanged_8"/>
+                <Text profile="motorSoundCfgValue" id="layerRow8Value" position="505px -497px" text=""/>
+            </GuiElement>
+
+            <!-- page "Presets" (v0.13.0.0): one toggle button per preset, green = active. presetButton1 .. 12 follow the
+                 order of MotorSoundConfigurator.PRESETS (src/Presets.lua). Two columns of 195px (-97 .. 97, 108 .. 302,
+                 centred on the page; v0.16.0.0 engine swap column moved to its own tab, v0.17.1.0 character column removed), short button
+                 names (the column header names the part); rows every 42px, second section header at -365 -->
+            <GuiElement profile="emptyPanel" id="presetPage">
+                <Text profile="motorSoundCfgPresetHeader" position="0px -165px" text="$l10n_msc_category_motor"/>
+                <Button profile="motorSoundCfgPresetButton" id="presetButton1" position="0px -195px" text="" onClick="onClickPreset_1"/>
+                <Button profile="motorSoundCfgPresetButton" id="presetButton2" position="0px -237px" text="" onClick="onClickPreset_2"/>
+                <Button profile="motorSoundCfgPresetButton" id="presetButton3" position="0px -279px" text="" onClick="onClickPreset_3"/>
+                <Button profile="motorSoundCfgPresetButton" id="presetButton4" position="0px -321px" text="" onClick="onClickPreset_4"/>
+                <Text profile="motorSoundCfgPresetHeader" position="0px -365px" text="$l10n_msc_group_exhaust"/>
+                <Button profile="motorSoundCfgPresetButton" id="presetButton5" position="0px -395px" text="" onClick="onClickPreset_5"/>
+                <Button profile="motorSoundCfgPresetButton" id="presetButton6" position="0px -437px" text="" onClick="onClickPreset_6"/>
+
+                <Text profile="motorSoundCfgPresetHeader" position="205px -165px" text="$l10n_msc_category_gearbox"/>
+                <Button profile="motorSoundCfgPresetButton" id="presetButton7" position="205px -195px" text="" onClick="onClickPreset_7"/>
+                <Button profile="motorSoundCfgPresetButton" id="presetButton8" position="205px -237px" text="" onClick="onClickPreset_8"/>
+                <Button profile="motorSoundCfgPresetButton" id="presetButton9" position="205px -279px" text="" onClick="onClickPreset_9"/>
+                <Button profile="motorSoundCfgPresetButton" id="presetButton10" position="205px -321px" text="" onClick="onClickPreset_10"/>
+                <Text profile="motorSoundCfgPresetHeader" position="205px -365px" text="$l10n_msc_preset_column_cabin"/>
+                <Button profile="motorSoundCfgPresetButton" id="presetButton11" position="205px -395px" text="" onClick="onClickPreset_11"/>
+                <Button profile="motorSoundCfgPresetButton" id="presetButton12" position="205px -437px" text="" onClick="onClickPreset_12"/>
+            </GuiElement>
+
+            <!-- page "Engine swap" (v0.16.0.0, user 2026-10-11): volume of the swapped engine in the place of the scope
+                 row, then one toggle button per engine of the catalog group "engine" (src/EngineSwap.lua), green =
+                 active; swapButton1 = "Own engine", 2 .. 50 = engines sorted by name, filled column by column.
+                 Five columns of 155px every 165px (-307 .. 507, as wide as the presets page), ten rows every 40px
+                 (-170 .. -564) -->
+            <GuiElement profile="emptyPanel" id="swapPage">
+                <Text profile="motorSoundCfgLabel" id="swapVolumeLabel" position="-215px -128px" text="$l10n_msc_swap_volume"/>
+                <OptionSlider profile="motorSoundCfgSlider" id="swapVolumeOption" position="-10px -120px" onClick="onSwapVolumeChanged"/>
+                <Text profile="motorSoundCfgValue" id="swapVolumeValue" position="145px -128px" text=""/>
+                <!-- shown instead of the volume row on vehicles without own engine samples (electric motors, review #23) -->
+                <Text profile="motorSoundCfgSwapHint" id="swapHintText" position="100px -128px" text="$l10n_msc_swap_unavailable" visible="false"/>
+
+                <Button profile="motorSoundCfgSwapButton" id="swapButton1" position="-230px -170px" text="" onClick="onClickSwap_1"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton2" position="-230px -210px" text="" onClick="onClickSwap_2"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton3" position="-230px -250px" text="" onClick="onClickSwap_3"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton4" position="-230px -290px" text="" onClick="onClickSwap_4"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton5" position="-230px -330px" text="" onClick="onClickSwap_5"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton6" position="-230px -370px" text="" onClick="onClickSwap_6"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton7" position="-230px -410px" text="" onClick="onClickSwap_7"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton8" position="-230px -450px" text="" onClick="onClickSwap_8"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton9" position="-230px -490px" text="" onClick="onClickSwap_9"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton10" position="-230px -530px" text="" onClick="onClickSwap_10"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton11" position="-65px -170px" text="" onClick="onClickSwap_11"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton12" position="-65px -210px" text="" onClick="onClickSwap_12"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton13" position="-65px -250px" text="" onClick="onClickSwap_13"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton14" position="-65px -290px" text="" onClick="onClickSwap_14"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton15" position="-65px -330px" text="" onClick="onClickSwap_15"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton16" position="-65px -370px" text="" onClick="onClickSwap_16"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton17" position="-65px -410px" text="" onClick="onClickSwap_17"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton18" position="-65px -450px" text="" onClick="onClickSwap_18"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton19" position="-65px -490px" text="" onClick="onClickSwap_19"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton20" position="-65px -530px" text="" onClick="onClickSwap_20"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton21" position="100px -170px" text="" onClick="onClickSwap_21"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton22" position="100px -210px" text="" onClick="onClickSwap_22"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton23" position="100px -250px" text="" onClick="onClickSwap_23"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton24" position="100px -290px" text="" onClick="onClickSwap_24"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton25" position="100px -330px" text="" onClick="onClickSwap_25"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton26" position="100px -370px" text="" onClick="onClickSwap_26"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton27" position="100px -410px" text="" onClick="onClickSwap_27"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton28" position="100px -450px" text="" onClick="onClickSwap_28"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton29" position="100px -490px" text="" onClick="onClickSwap_29"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton30" position="100px -530px" text="" onClick="onClickSwap_30"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton31" position="265px -170px" text="" onClick="onClickSwap_31"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton32" position="265px -210px" text="" onClick="onClickSwap_32"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton33" position="265px -250px" text="" onClick="onClickSwap_33"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton34" position="265px -290px" text="" onClick="onClickSwap_34"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton35" position="265px -330px" text="" onClick="onClickSwap_35"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton36" position="265px -370px" text="" onClick="onClickSwap_36"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton37" position="265px -410px" text="" onClick="onClickSwap_37"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton38" position="265px -450px" text="" onClick="onClickSwap_38"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton39" position="265px -490px" text="" onClick="onClickSwap_39"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton40" position="265px -530px" text="" onClick="onClickSwap_40"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton41" position="430px -170px" text="" onClick="onClickSwap_41"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton42" position="430px -210px" text="" onClick="onClickSwap_42"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton43" position="430px -250px" text="" onClick="onClickSwap_43"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton44" position="430px -290px" text="" onClick="onClickSwap_44"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton45" position="430px -330px" text="" onClick="onClickSwap_45"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton46" position="430px -370px" text="" onClick="onClickSwap_46"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton47" position="430px -410px" text="" onClick="onClickSwap_47"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton48" position="430px -450px" text="" onClick="onClickSwap_48"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton49" position="430px -490px" text="" onClick="onClickSwap_49"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton50" position="430px -530px" text="" onClick="onClickSwap_50"/>
+            </GuiElement>
+
+            <Bitmap profile="motorSoundCfgSeparator" position="0px -637px"/>
+            <Text profile="motorSoundCfgHelp" id="helpText" position="0px -649px" text=""/>
+        </GuiElement>
+
+        <BoxLayout profile="fs25_dialogButtonBox" id="buttonBox">
+            <Button profile="buttonActivate" id="resetButton" text="$l10n_msc_reset" onClick="onClickReset"/>
+            <Bitmap profile="fs25_dialogButtonBoxSeparator"/>
+            <Button profile="buttonMenuSwitch" id="resetAllButton" text="$l10n_msc_resetAll" onClick="onClickResetAll"/>
+            <Bitmap profile="fs25_dialogButtonBoxSeparator"/>
+            <Button profile="buttonBack" id="cancelButton" text="$l10n_msc_cancel" onClick="onClickCancel"/>
+            <Bitmap profile="fs25_dialogButtonBoxSeparator"/>
+            <Button profile="buttonOK" id="applyButton" text="$l10n_msc_apply" onClick="onClickApply"/>
+        </BoxLayout>
+    </GuiElement>
+
+    <GUIProfiles>
+        <!-- vehicle name centered under the title (user 2026-10-02); 440px (-220 .. 220) keeps it clear of the live
+             display, which starts at 230; longer names are cut (TextElement default layout mode truncate) -->
+        <Profile name="motorSoundCfgVehicleName" extends="fs25_textDefault" with="anchorTopCenter">
+            <size value="440px 24px"/>
+            <textSize value="16px"/>
+            <textBold value="true"/>
+            <textColor value="1 0.8 0.2 1"/>
+            <textAlignment value="center"/>
+        </Profile>
+
+        <Profile name="motorSoundCfgLabel" extends="fs25_textDefault" with="anchorTopCenter">
+            <size value="200px 20px"/>
+            <textSize value="15px"/>
+            <textColor value="0.85 0.85 0.85 1"/>
+            <textAlignment value="right"/>
+        </Profile>
+
+        <!-- row label of the "Sound" / "Filter" pages (v0.18.1.0): one per slider, right-aligned in front of it -->
+        <Profile name="motorSoundCfgRowLabel" extends="fs25_textDefault" with="anchorTopCenter">
+            <size value="150px 20px"/>
+            <textSize value="15px"/>
+            <textColor value="0.85 0.85 0.85 1"/>
+            <textAlignment value="right"/>
+        </Profile>
+
+        <!-- trailer / implement name in the table of the "Other sounds" page (v0.19.0.0): left-aligned, -320 .. -130
+             (right of the separator), a longer name is cut off at the end (TextElement default layout TRUNCATE) -->
+        <Profile name="motorSoundCfgTableName" extends="fs25_textDefault" with="anchorTopCenter">
+            <size value="190px 20px"/>
+            <textSize value="15px"/>
+            <textColor value="0.85 0.85 0.85 1"/>
+            <textAlignment value="left"/>
+        </Profile>
+
+        <!-- block header starting at the left edge of the content area (-320), for headers longer than motorSoundCfgBlockHeader
+             allows without crossing the separator ("Trailers & implements") -->
+        <Profile name="motorSoundCfgBlockHeaderLeft" extends="fs25_textDefault" with="anchorTopCenter">
+            <size value="300px 20px"/>
+            <textSize value="15px"/>
+            <textBold value="true"/>
+            <textColor value="1 1 1 1"/>
+            <textAlignment value="left"/>
+        </Profile>
+
+        <!-- "-" in a cell of the implement table without such a sound, centered below the column header -->
+        <Profile name="motorSoundCfgTableDash" extends="fs25_textDefault" with="anchorTopCenter">
+            <size value="110px 20px"/>
+            <textSize value="15px"/>
+            <textColor value="0.55 0.55 0.55 1"/>
+            <textAlignment value="center"/>
+        </Profile>
+
+        <!-- 110px slider of the implement table, three cells side by side -->
+        <Profile name="motorSoundCfgSliderTable" extends="fs25_optionSlider" with="anchorTopCenter">
+            <width value="110px"/>
+            <defaultProfileText value="motorSoundCfgSliderTextHidden"/>
+        </Profile>
+
+        <Profile name="motorSoundCfgColumnHeader" extends="fs25_textDefault" with="anchorTopCenter">
+            <size value="250px 20px"/>
+            <textSize value="15px"/>
+            <textBold value="true"/>
+            <textColor value="1 1 1 1"/>
+            <textAlignment value="center"/>
+        </Profile>
+
+        <!-- column header of the "Presets" page: as motorSoundCfgColumnHeader, as wide as a preset column -->
+        <Profile name="motorSoundCfgPresetHeader" extends="fs25_textDefault" with="anchorTopCenter">
+            <size value="195px 20px"/>
+            <textSize value="15px"/>
+            <textBold value="true"/>
+            <textColor value="1 1 1 1"/>
+            <textAlignment value="center"/>
+        </Profile>
+
+        <!-- block header in the label column ("Basic sound", "Cabin & fan", "In the cabin", "Outside"): bold, white,
+             right aligned like the row labels below it -->
+        <Profile name="motorSoundCfgBlockHeader" extends="fs25_textDefault" with="anchorTopCenter">
+            <size value="200px 20px"/>
+            <textSize value="15px"/>
+            <textBold value="true"/>
+            <textColor value="1 1 1 1"/>
+            <textAlignment value="right"/>
+        </Profile>
+
+        <!-- read-only text of the info panel on the "Filter" page (v0.20.0.0): left-aligned right of a row label, not bold -->
+        <Profile name="motorSoundCfgInfoText" extends="fs25_textDefault" with="anchorTopCenter">
+            <size value="280px 20px"/>
+            <textSize value="14px"/>
+            <textColor value="0.85 0.85 0.85 1"/>
+            <textAlignment value="left"/>
+        </Profile>
+
+        <Profile name="motorSoundCfgValue" extends="fs25_textDefault" with="anchorTopCenter">
+            <size value="100px 20px"/>
+            <textSize value="15px"/>
+            <textBold value="true"/>
+            <textColor value="1 1 1 1"/>
+            <textAlignment value="left"/>
+        </Profile>
+
+        <Profile name="motorSoundCfgLiveLabel" extends="fs25_textDefault" with="anchorTopCenter">
+            <size value="80px 20px"/>
+            <textSize value="14px"/>
+            <textColor value="0.75 0.75 0.75 1"/>
+            <textAlignment value="right"/>
+        </Profile>
+
+        <Profile name="motorSoundCfgLiveValue" extends="fs25_textDefault" with="anchorTopCenter">
+            <size value="80px 20px"/>
+            <textSize value="14px"/>
+            <textBold value="true"/>
+            <textColor value="1 1 1 1"/>
+            <textAlignment value="left"/>
+        </Profile>
+
+        <!-- meter: background bar and fill bar; the fill is a child of the background, anchored and pivoted top left,
+             so it starts at the left end of the background and grows to the right when resized -->
+        <Profile name="motorSoundCfgMeterBg" extends="baseReference" with="anchorTopCenter">
+            <size value="120px 8px"/>
+            <imageColor value="1 1 1 0.15"/>
+        </Profile>
+        <Profile name="motorSoundCfgMeterFill" extends="baseReference" with="anchorTopLeft">
+            <size value="120px 8px"/>
+            <imageColor value="0.33716 0.55834 0.0003 1"/>
+        </Profile>
+
+        <Profile name="motorSoundCfgOption" extends="fs25_multiTextOption" with="anchorTopCenter">
+            <size value="300px 30px"/>
+        </Profile>
+
+        <!-- sound choice of the "Extra sounds" page: wide enough that the longest catalog name (33 characters,
+             "Modern: MF Beta Combine (Outside)") does not scroll. fs25_multiTextOptionText: 16px, upper case,
+             text area = width - 50px, scrolling layout when too long; measured ~9px per character ("ALL VEHICLES"
+             ~103px) -> ~310px text + margin. Layout: label -315 .. -185, choice -155 .. 265, volume 295 .. 425,
+             value from 455 -->
+        <Profile name="motorSoundCfgLayerChoice" extends="fs25_multiTextOption" with="anchorTopCenter">
+            <size value="420px 30px"/>
+        </Profile>
+
+        <!-- group label of the "Extra sounds" page: narrower than motorSoundCfgLabel so the wider choice fits -->
+        <Profile name="motorSoundCfgLayerLabel" extends="fs25_textDefault" with="anchorTopCenter">
+            <size value="130px 20px"/>
+            <textSize value="15px"/>
+            <textColor value="0.85 0.85 0.85 1"/>
+            <textAlignment value="right"/>
+        </Profile>
+
+        <Profile name="motorSoundCfgSlider" extends="fs25_optionSlider" with="anchorTopCenter">
+            <width value="150px"/>
+            <defaultProfileText value="motorSoundCfgSliderTextHidden"/>
+        </Profile>
+
+        <!-- 170px slider of the "Sound" / "Filter" pages (v0.18.1.0): 20px between slider end and label / value, so the
+             knob at 0 % / 300 % does not cover the texts -->
+        <Profile name="motorSoundCfgSliderWide" extends="fs25_optionSlider" with="anchorTopCenter">
+            <width value="170px"/>
+            <defaultProfileText value="motorSoundCfgSliderTextHidden"/>
+        </Profile>
+
+        <!-- 130px slider: preview (left column) and layer volume (next to the wide sound choice) -->
+        <Profile name="motorSoundCfgSliderNarrow" extends="fs25_optionSlider" with="anchorTopCenter">
+            <width value="130px"/>
+            <defaultProfileText value="motorSoundCfgSliderTextHidden"/>
+        </Profile>
+
+        <Profile name="motorSoundCfgPreviewHeader" extends="fs25_textDefault" with="anchorTopCenter">
+            <size value="170px 20px"/>
+            <textSize value="15px"/>
+            <textBold value="true"/>
+            <textColor value="1 1 1 1"/>
+            <textAlignment value="center"/>
+        </Profile>
+
+        <Profile name="motorSoundCfgPreviewLabel" extends="fs25_textDefault" with="anchorTopCenter">
+            <size value="170px 20px"/>
+            <textSize value="14px"/>
+            <textColor value="0.85 0.85 0.85 1"/>
+            <textAlignment value="left"/>
+        </Profile>
+
+        <Profile name="motorSoundCfgPreviewValue" extends="fs25_textDefault" with="anchorTopCenter">
+            <size value="170px 20px"/>
+            <textSize value="14px"/>
+            <textBold value="true"/>
+            <textColor value="1 1 1 1"/>
+            <textAlignment value="right"/>
+        </Profile>
+
+        <!-- slider text stays in the element (state handling), but is fully transparent -->
+        <Profile name="motorSoundCfgSliderTextHidden" extends="fs25_optionSliderText">
+            <textColor value="0 0 0 0"/>
+            <textFocusedColor value="0 0 0 0"/>
+            <textHighlightedColor value="0 0 0 0"/>
+            <textSelectedColor value="0 0 0 0"/>
+            <textDisabledColor value="0 0 0 0"/>
+        </Profile>
+
+        <!-- tab buttons: as motorSoundCfgToggleButton, but the current tab is light grey (green only means "active": preset,
+             hear original; UI review #9); the green bar motorSoundCfgTabMarker left of it marks the current tab as well -->
+        <Profile name="motorSoundCfgTabButton" extends="fs25_wideButton" with="anchorTopCenter">
+            <imageSliceId value="gui.colorPreset"/>
+            <iconSize value="0px 0px"/>
+            <iconTextOffset value="0px 0px"/>
+            <handleFocus value="true"/>
+            <fitToContent value="false"/>
+            <size value="170px 34px"/>
+            <textSize value="15px"/>
+            <textUpperCase value="false"/>
+            <textAutoWidth value="false"/>
+            <textColor value="0.89627 0.92158 0.81485 1"/>
+            <textFocusedColor value="1 1 1 1"/>
+            <textHighlightedColor value="1 1 1 1"/>
+            <textSelectedColor value="1 1 1 1"/>
+            <imageColor value="1 1 1 0.06"/>
+            <imageFocusedColor value="1 1 1 0.18"/>
+            <imageHighlightedColor value="1 1 1 0.18"/>
+            <imageSelectedColor value="1 1 1 0.30"/>
+            <imageDisabledColor value="1 1 1 0.03"/>
+        </Profile>
+
+        <Profile name="motorSoundCfgTabMarker" extends="baseReference" with="anchorTopCenter">
+            <size value="6px 34px"/>
+            <imageColor value="0.22323 0.40724 0.00368 1"/>
+        </Profile>
+
+        <!-- toggle buttons: plain colored rectangles. fs25_wideButton inherits imageSliceId "noSlice" from
+             emptyPanel, which draws the whole UI atlas once the image color is visible; "gui.colorPreset" (as in
+             baseReference) is a plain colored area. Selected (original active) = FS25 green
+             (preset fs25_colorMainHighlight) -->
+        <Profile name="motorSoundCfgToggleButton" extends="fs25_wideButton" with="anchorTopCenter">
+            <imageSliceId value="gui.colorPreset"/>
+            <!-- no key glyph: fs25_wideButton reserves 30px icon / -10px offset, which shifts centered text 20px to
+                 the right (ButtonElement:getIconModifiedTextOffset, RAW elements/ButtonElement.lua:689) -->
+            <iconSize value="0px 0px"/>
+            <iconTextOffset value="0px 0px"/>
+            <handleFocus value="true"/>
+            <fitToContent value="false"/>
+            <size value="170px 34px"/>
+            <textSize value="15px"/>
+            <textUpperCase value="false"/>
+            <textAutoWidth value="false"/>
+            <textColor value="0.89627 0.92158 0.81485 1"/>
+            <textFocusedColor value="1 1 1 1"/>
+            <textHighlightedColor value="1 1 1 1"/>
+            <textSelectedColor value="1 1 1 1"/>
+            <imageColor value="1 1 1 0.06"/>
+            <imageFocusedColor value="1 1 1 0.18"/>
+            <imageHighlightedColor value="1 1 1 0.18"/>
+            <imageSelectedColor value="0.22323 0.40724 0.00368 1"/>
+            <imageDisabledColor value="1 1 1 0.03"/>
+        </Profile>
+
+        <!-- preset buttons: same look as motorSoundCfgToggleButton (green = active preset), wider; an own profile and not
+             extends="motorSoundCfgToggleButton", profiles with "with" are not derived from each other here -->
+        <Profile name="motorSoundCfgPresetButton" extends="fs25_wideButton" with="anchorTopCenter">
+            <imageSliceId value="gui.colorPreset"/>
+            <iconSize value="0px 0px"/>
+            <iconTextOffset value="0px 0px"/>
+            <handleFocus value="true"/>
+            <fitToContent value="false"/>
+            <size value="195px 34px"/>
+            <textSize value="15px"/>
+            <textUpperCase value="false"/>
+            <textAutoWidth value="false"/>
+            <textColor value="0.89627 0.92158 0.81485 1"/>
+            <textFocusedColor value="1 1 1 1"/>
+            <textHighlightedColor value="1 1 1 1"/>
+            <textSelectedColor value="1 1 1 1"/>
+            <imageColor value="1 1 1 0.06"/>
+            <imageFocusedColor value="1 1 1 0.18"/>
+            <imageHighlightedColor value="1 1 1 0.18"/>
+            <imageSelectedColor value="0.22323 0.40724 0.00368 1"/>
+            <imageDisabledColor value="1 1 1 0.03"/>
+        </Profile>
+
+        <!-- engine swap buttons (v0.16.0.0): as motorSoundCfgPresetButton, 155px wide for five columns; own profile for the same
+             reason as motorSoundCfgPresetButton -->
+        <Profile name="motorSoundCfgSwapButton" extends="fs25_wideButton" with="anchorTopCenter">
+            <imageSliceId value="gui.colorPreset"/>
+            <iconSize value="0px 0px"/>
+            <iconTextOffset value="0px 0px"/>
+            <handleFocus value="true"/>
+            <fitToContent value="false"/>
+            <size value="155px 34px"/>
+            <textSize value="15px"/>
+            <textUpperCase value="false"/>
+            <textAutoWidth value="false"/>
+            <textColor value="0.89627 0.92158 0.81485 1"/>
+            <textFocusedColor value="1 1 1 1"/>
+            <textHighlightedColor value="1 1 1 1"/>
+            <textSelectedColor value="1 1 1 1"/>
+            <imageColor value="1 1 1 0.06"/>
+            <imageFocusedColor value="1 1 1 0.18"/>
+            <imageHighlightedColor value="1 1 1 0.18"/>
+            <imageSelectedColor value="0.22323 0.40724 0.00368 1"/>
+            <imageDisabledColor value="1 1 1 0.03"/>
+        </Profile>
+
+        <!-- engine swap page: hint in place of the volume row when the vehicle has no own engine samples -->
+        <Profile name="motorSoundCfgSwapHint" extends="fs25_textDefault" with="anchorTopCenter">
+            <!-- over the five button columns (-307 .. 507), same row as the volume slider -->
+            <size value="814px 20px"/>
+            <textSize value="15px"/>
+            <textColor value="0.85 0.85 0.85 1"/>
+            <textAlignment value="center"/>
+        </Profile>
+
+        <!-- help line, filled by toolTipText / toolTipElementId of the controls on focus or mouse over
+             (RAW elements/GuiElement.lua:942-991); linked in MotorSoundConfiguratorDialog:connectHelpText; based on fs25_dialogText -->
+        <!-- 4 lines of 22px: the help texts put each part in its own line (character reference 10 in the l10n
+             files, a Lua newline before "Source: ..."), at most 3 lines plus one for wrapping (user 2026-10-02) -->
+        <Profile name="motorSoundCfgHelp" extends="fs25_textDefault" with="anchorTopCenter">
+            <size value="1000px 88px"/>
+            <textSize value="14px"/>
+            <textMaxNumLines value="4"/>
+            <textAlignment value="center"/>
+            <textVerticalAlignment value="top"/>
+            <textColor value="0.75 0.75 0.75 1"/>
+        </Profile>
+
+        <Profile name="motorSoundCfgSeparator" extends="baseReference" with="anchorTopCenter">
+            <size value="1000px 2px"/>
+            <imageColor value="1 1 1 0.15"/>
+        </Profile>
+
+        <Profile name="motorSoundCfgSeparatorVertical" extends="baseReference" with="anchorTopCenter">
+            <size value="2px 512px"/>
+            <imageColor value="1 1 1 0.15"/>
+        </Profile>
+    </GUIProfiles>
+</GUI>

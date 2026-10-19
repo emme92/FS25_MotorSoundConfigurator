@@ -1,0 +1,4 @@
+# normalize text files, keep binary game assets untouched
+* text=auto
+*.dds binary
+*.png binary

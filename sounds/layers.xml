@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!--
+    Layer catalog: additional sounds that can be attached to any motorized vehicle (dialog tab "Extra sounds": one row per
+    group, saved per vehicle model). Each <layer> holds one sample definition in the vehicle sound XML format (<motor ...>),
+    loaded with g_soundManager:loadSampleFromXML(handle, "layers.layer(i)", "motor", ...) and added to the vehicle's
+    motorSamples, so Motorized starts / stops it with the motor and updates rpm / load (tested 2026-10-01).
+
+    name      unique id, also the l10n key msc_layer_<name> (translated since v0.16.0.0); never rename (saved in the settings)
+    group     dialog group, l10n msc_group_<group> and msc_help_group_<group>; groups are shown in the order
+              of their first layer, max. 9 groups (dialog rows); one layer per group can be active at a time.
+              Every layer of the group "engine" is also a button on the "Engine swap" tab (src/EngineSwap.lua)
+    shortName button text on the "Engine swap" tab (group "engine" only; brand names, not translated, sorted by it)
+    category  motor | gearbox | cabin | rattle: which category factors apply (except volume, layers have their own) (default: from the template / file name)
+    source    vehicle the sound comes from, shown in the help line (brand names, not translated)
+    baseGameFile  instead of source for base game sounds without a source vehicle: file / template name, shown as
+              l10n msc_layer_baseGame ("base game (%s)" / "Basisspiel (%s)")
+    needsSuspension  true: the sound uses the SUSPENSION modifier, attached only to vehicles with spec_suspensions
+
+    source="own": no sound file, clones the vehicle's own main engine sample (g_soundManager:cloneSample) with
+    pitchFactor / rpmFactor / volumeFactor relative to its original values; modifiers inside <motor> are added to
+    the clone (SoundManager:loadModifiersFromXML).
+
+    Files point at base game data ($data/...). .gls files follow the rpm by loop synthesis, .ogg / .wav loops need
+    pitch / volume modifiers (MOTOR_RPM_REAL = rpm, MOTOR_LOAD = load 0..1, as in the base game vehicles).
+    Volume calibration v0.13.0.0 (hearing test of the user 2026-10-02): 100 % = about as loud as the original engine of
+    a vehicle. The engine volumeScales were about half of the source vehicles' own values (JD 3650 0.6 vs 1.2, MF 8570
+    1.1 vs 2.2), the user heard the original loudness at 200 % (300 % for Deutz Series 7, Fendt 200, Kubota M8 and the
+    own engine octave / fifth), so these were doubled / tripled; the load versions of the old engines likewise.
+    Exhausts Xerion (Load), Pm Trac and Pm Trac (Load) doubled as well (second hearing test, 200 % = new 100 %).
+    Third hearing test (new 100 % = old value): CLAAS Arion 200 %, JD 7R / Valtra T / MF 8570 / Zetor 150 %,
+    Fiat 90 (and its load version) 90 %, Transtar II 70 %.
+    Fourth hearing test (engine swap, user 2026-10-13, JD 3650, swapped engine vs. own engine with "Hear original";
+    new 100 % = old value x the slider value that sounded equally loud): Quadtrac, Vestrum, NH TK4, Forterra, Proxima 95 %,
+    Xerion, Deutz Series 7, Kubota M8, Landini, McCormick, MF 5700 S, MF 9S, Zetor Crystal 110 %, Deutz 6C,
+    Deutz Series 8, Valtra S 120 %, Fendt 200 115 %, AgroStar, Fendt MT 1100, MF 7S, MF 8570 80 %, Fiat 90, JD 9RX 830,
+    Transtar II, Valtra T 90 %, Rigitrac 70 %, all others 100 % (load versions unchanged).
+-->
+<layers>
+    <!-- engines of other base game vehicles (definitions from their sound XMLs), older ones first (user prefers them) -->
+    <layer name="engineJohnDeere3650" group="engine" shortName="JD 3650" source="John Deere 3650">
+        <motor template="engineMedium" file="$data/vehicles/johnDeere/series3650/sounds/series3650.gls" volumeScale="1.2" linkNodeOffset="0 1.5 1.2"/>
+    </layer>
+    <layer name="engineFiat90" group="engine" shortName="Fiat 90" source="Fiat 90 Series">
+        <motor template="engineMediumVintage" file="$data/vehicles/fiat/series90/sounds/fiatagri90.gls" volumeScale="1.8" linkNodeOffset="0 1.5 1.2"/>
+    </layer>
+    <layer name="engineZetorCrystal16045" group="engine" shortName="Zetor Crystal 160" source="Zetor Crystal 160 45">
+        <motor template="engineMediumVintage" file="$data/vehicles/zetor/crystal16045/sounds/crystal16045.gls" volumeScale="1.5" linkNodeOffset="0 1.5 1.2"/>
+    </layer>
+    <layer name="engineDeutzAgroStar" group="engine" shortName="Deutz AgroStar" source="Deutz-Fahr AgroStar 8.31">
+        <motor template="engineMedium" file="$data/vehicles/deutzFahr/agroStar831/sounds/agroStar831.gls" volumeScale="1.75" linkNodeOffset="0 1.5 1.2"/>
+    </layer>
+    <layer name="engineMasseyFerguson8570" group="engine" shortName="MF 8570 (Combine)" source="Massey Ferguson 8570">
+        <motor template="engineMedium" file="$data/vehicles/masseyFerguson/mf8570/sounds/8570_loop.gls" volumeScale="2.65" linkNodeOffset="0 1.5 1.2"/>
+    </layer>
+    <layer name="engineMackSuperliner" group="engine" shortName="Mack (Truck)" source="Mack Superliner 1979">
+        <motor template="engineLarge" file="$data/vehicles/mack/superliner1979/sounds/superliner1979_loop.gls" volumeScale="1.6" linkNodeOffset="0 1.5 1.5"/>
+    </layer>
+    <layer name="engineInternationalTranstar" group="engine" shortName="Transtar II (Truck)" source="International Transtar II Eagle">
+        <motor template="engineMedium" file="$data/vehicles/international/transtarII/sounds/transtarEagle.gls" volumeScale="1.4" linkNodeOffset="0 1.5 1.5"/>
+    </layer>
+
+    <!-- modern engines (first catalog, names kept because they may be saved already) -->
+    <layer name="engineFendtVario1000" group="engine" shortName="Fendt 1000" source="Fendt 1000 Vario">
+        <motor template="engineLarge" file="$data/vehicles/fendt/vario1000/sounds/vario1000_loop.gls" volumeScale="1.4" linkNodeOffset="0 1 1.5"/>
+    </layer>
+    <layer name="engineFendtVario700" group="engine" shortName="Fendt 700" source="Fendt 700 Vario">
+        <motor template="engineMedium" file="$data/vehicles/fendt/vario700/sounds/vario700_loop.gls" volumeScale="1.4" linkNodeOffset="0 1 1.5"/>
+    </layer>
+    <layer name="engineDeutzSeries7" group="engine" shortName="Deutz Series 7" source="Deutz-Fahr Series 7">
+        <motor template="engineMedium" file="$data/vehicles/deutzFahr/series7/sounds/series7_loop.gls" volumeScale="2.3" linkNodeOffset="0 1 1.5"/>
+    </layer>
+    <layer name="engineValtraT" group="engine" shortName="Valtra T" source="Valtra T Series">
+        <motor template="engineMedium" file="$data/vehicles/valtra/tSeries/sounds/tSeries_loop.gls" volumeScale="1.9" linkNodeOffset="0 1 1.5"/>
+    </layer>
+    <layer name="engineFendtVario200" group="engine" shortName="Fendt 200" source="Fendt 200 Vario">
+        <motor template="engineSmall" file="$data/vehicles/fendt/vario200/sounds/vario200_loop.gls" volumeScale="2.4" linkNodeOffset="0 1 1.2"/>
+    </layer>
+    <layer name="engineKubotaM8" group="engine" shortName="Kubota M8" source="Kubota M8">
+        <motor template="engineSmall" file="$data/vehicles/kubota/seriesM8/sounds/seriesM8_loop.gls" volumeScale="2.3" linkNodeOffset="0 1 1.2"/>
+    </layer>
+    <!-- John Deere 6R / 7R (wish of the user, hearing test 2026-10-02); volumeScale as the other modern engines -->
+    <layer name="engineJohnDeere6R" group="engine" shortName="JD 6R" source="John Deere 6R">
+        <motor template="engineMedium" file="$data/vehicles/johnDeere/series6R/sounds/series6r.gls" volumeScale="1.4" linkNodeOffset="0 1.8 1.2"/>
+    </layer>
+    <layer name="engineJohnDeere7R" group="engine" shortName="JD 7R" source="John Deere 7R">
+        <motor template="engineMedium" file="$data/vehicles/johnDeere/series7R/sounds/series7R_loop.gls" volumeScale="2.1" linkNodeOffset="0 1.8 1.2"/>
+    </layer>
+    <!-- CLAAS Arion 400 sound, also used by the Arion 570-530 (arion550.xml: sounds of arion400); volumeScale x2
+         of arion400.xml (third hearing test; user 2026-10-02: "great engine sound") -->
+    <layer name="engineClaasArion400" group="engine" shortName="CLAAS Arion 400" source="CLAAS Arion 400 / 570">
+        <motor template="engineMedium" file="$data/vehicles/claas/arion400/sounds/arion400.gls" volumeScale="2.0" linkNodeOffset="0 1.8 1.2"/>
+    </layer>
+
+    <!-- all other base game tractor engines (engine swap tab, user 2026-10-11), calibrated in the fourth hearing test (see above), first estimated
+         (docs/HOERTEST_MOTOREN.md). Template, file, pitchScale and loopSynthesisRPMRatio from the tractor's sound XML;
+         rpm volume curves (Magnum, Quadtrac) kept, cabin filters and speed modifiers left out like above.
+         Start volumeScale = volumeScale x sounds#volumeFactor of the source tractor x 2 (median ratio of the
+         calibrated engines above), 1.0 .. 4.0. Tractors sharing an engine: Tony 10900 = Mach 4R, Arion 550 = Arion 400,
+         Fendt 500 = Fendt 300, JD 8RT / 8RX = 8R, JD 9RX = 9R, NH T7 / Steyr Absolut = Case Puma,
+         SAME Virtus = Deutz 6C, AGCO 8000 = Challenger MT655 -->
+    <layer name="engineAntonioCarraroMach4R" group="engine" shortName="Carraro Mach 4R" source="Antonio Carraro Mach 4R / Tony 10900">
+        <motor template="engineSmall" file="$data/vehicles/antonioCarraro/mach4R/sounds/mach4R_loop.gls" volumeScale="1.5" linkNodeOffset="0 1 1.2"/>
+    </layer>
+    <layer name="engineCaseFarmall120C" group="engine" shortName="Case Farmall 120C" source="Case IH Farmall 120C">
+        <motor template="engineLarge" file="$data/vehicles/caseIH/farmall120C/sounds/Farmall120_loop.gls" pitchScale="1.05" volumeScale="1.8" linkNodeOffset="0 1.5 1.2"/>
+    </layer>
+    <layer name="engineCaseMagnum" group="engine" shortName="Case Magnum" source="Case IH Magnum">
+        <motor template="engineLarge" file="$data/vehicles/caseIH/magnumT4B/sounds/magnumT4B_loop.gls" volumeScale="1.0" linkNodeOffset="0 1.5 1.5">
+            <volume>
+                <modifier type="MOTOR_RPM_REAL" value="850" modifiedValue="2.7"/>
+                <modifier type="MOTOR_RPM_REAL" value="2200" modifiedValue="1.2"/>
+            </volume>
+        </motor>
+    </layer>
+    <layer name="engineCasePuma" group="engine" shortName="Case Puma" source="Case IH Puma / New Holland T7 / Steyr Absolut">
+        <motor template="engineMedium" file="$data/vehicles/caseIH/puma/sounds/puma.gls" volumeScale="1.35" linkNodeOffset="0 1.5 1.2"/>
+    </layer>
+    <layer name="engineCaseQuadtrac" group="engine" shortName="Case Quadtrac" source="Case IH Quadtrac 715">
+        <motor template="engineLarge" file="$data/vehicles/caseIH/quadtrac715/sounds/quadtrac715_loop.gls" volumeScale="2.3" linkNodeOffset="0 1.5 1.5">
+            <volume>
+                <modifier type="MOTOR_RPM_REAL" value="850" modifiedValue="0.85"/>
+                <modifier type="MOTOR_RPM_REAL" value="2200" modifiedValue="1.4"/>
+            </volume>
+        </motor>
+    </layer>
+    <layer name="engineCaseVestrum" group="engine" shortName="Case Vestrum" source="Case IH Vestrum 130">
+        <motor template="engineSmall" file="$data/vehicles/caseIH/vestrum130/sounds/vestrum130.gls" volumeScale="2.75" linkNodeOffset="0 1 1.2"/>
+    </layer>
+    <layer name="engineChallengerMT655" group="engine" shortName="Challenger MT655" source="Challenger MT655 / AGCO 8000">
+        <motor template="engineMedium" file="$data/vehicles/challenger/mt655/sounds/mt655.gls" volumeScale="1.25" linkNodeOffset="0 1.8 1.2"/>
+    </layer>
+    <layer name="engineClaasXerion" group="engine" shortName="CLAAS Xerion" source="CLAAS Xerion 12">
+        <motor template="engineLarge" file="$data/vehicles/claas/xerion12/sounds/xerion12Engine_loop.gls" volumeScale="2.6" loopSynthesisRPMRatio="0.80" linkNodeOffset="0 1.5 1.5"/>
+    </layer>
+    <layer name="engineDeutzSeries6C" group="engine" shortName="Deutz Series 6C" source="Deutz-Fahr Series 6C / SAME Virtus">
+        <motor template="engineMedium" file="$data/vehicles/deutzFahr/series6C/sounds/deutz6C.gls" volumeScale="1.55" linkNodeOffset="0 1.8 1.2"/>
+    </layer>
+    <layer name="engineDeutzSeries8" group="engine" shortName="Deutz Series 8" source="Deutz-Fahr Series 8">
+        <motor template="engineMedium" file="$data/vehicles/deutzFahr/series8/sounds/series8_loop.gls" volumeScale="1.75" linkNodeOffset="0 1 1.5"/>
+    </layer>
+    <layer name="engineFendtMT1100" group="engine" shortName="Fendt MT 1100" source="Fendt 1100 MT">
+        <motor template="engineLarge" file="$data/vehicles/fendt/mt1100/sounds/mt1100_loop.gls" volumeScale="1.9" linkNodeOffset="0 1 1.5"/>
+    </layer>
+    <layer name="engineFendtVario300" group="engine" shortName="Fendt 300" source="Fendt 300 / 500 Vario">
+        <motor template="engineSmall" file="$data/vehicles/fendt/vario300/sounds/vario300_loop.gls" volumeScale="2.4" linkNodeOffset="0 1 1.2"/>
+    </layer>
+    <layer name="engineFendtVario900" group="engine" shortName="Fendt 900" source="Fendt 900 Vario">
+        <motor template="engineLarge" file="$data/vehicles/fendt/vario900/sounds/vario900_loop.gls" volumeScale="1.8" linkNodeOffset="0 1 1.5"/>
+    </layer>
+    <layer name="engineIsekiTJW" group="engine" shortName="Iseki TJW" source="Iseki TJW Series">
+        <motor template="engineSmall" file="$data/vehicles/iseki/seriesTJW/sounds/tjw_loop.gls" volumeScale="3.8" linkNodeOffset="0 1 1.2"/>
+    </layer>
+    <layer name="engineJohnDeere6M" group="engine" shortName="JD 6M" source="John Deere 6M">
+        <motor template="engineSmall" file="$data/vehicles/johnDeere/series6M/sounds/series6M_loop.gls" volumeScale="2.4" linkNodeOffset="0 1.8 1.2"/>
+    </layer>
+    <layer name="engineJohnDeere8R" group="engine" shortName="JD 8R" source="John Deere 8R / 8RT / 8RX">
+        <motor template="engineMedium" file="$data/vehicles/johnDeere/series8R/sounds/series8R.gls" volumeScale="1.0" linkNodeOffset="0 2 1.5"/>
+    </layer>
+    <layer name="engineJohnDeere9R" group="engine" shortName="JD 9R" source="John Deere 9R / 9RX">
+        <motor template="engineLarge" file="$data/vehicles/johnDeere/series9R/sounds/series9R_loop.gls" volumeScale="2.7" linkNodeOffset="0 2 1.5"/>
+    </layer>
+    <layer name="engineJohnDeere9RX830" group="engine" shortName="JD 9RX 830" source="John Deere 9RX 830">
+        <motor template="engineMedium" file="$data/vehicles/johnDeere/series9RX830/sounds/series9RX830.gls" volumeScale="3.6" linkNodeOffset="0 1.8 1.2"/>
+    </layer>
+    <layer name="engineLandiniREX4" group="engine" shortName="Landini REX4" source="Landini REX4">
+        <motor template="engineSmall" file="$data/vehicles/landini/seriesREX4/sounds/seriesREX4_loop.gls" volumeScale="2.85" linkNodeOffset="0 1 1.2"/>
+    </layer>
+    <layer name="engineLindnerLintrac" group="engine" shortName="Lindner Lintrac" source="Lindner Lintrac 130">
+        <motor template="engineSmall" file="$data/vehicles/lindner/lintrac130/sounds/lintrac130_loop.gls" volumeScale="2.7" linkNodeOffset="0 1 1.2"/>
+    </layer>
+    <layer name="engineMasseyFerguson5700S" group="engine" shortName="MF 5700 S" source="Massey Ferguson 5700 S">
+        <motor template="engineSmall" file="$data/vehicles/masseyFerguson/series5700S/sounds/series5700S.gls" volumeScale="2.2" linkNodeOffset="0 1 1.2"/>
+    </layer>
+    <layer name="engineMasseyFerguson7S" group="engine" shortName="MF 7S" source="Massey Ferguson 7S">
+        <motor template="engineMedium" file="$data/vehicles/masseyFerguson/series7S/sounds/series7S.gls" volumeScale="0.9" linkNodeOffset="0 1.8 1.2"/>
+    </layer>
+    <layer name="engineMasseyFerguson9S" group="engine" shortName="MF 9S" source="Massey Ferguson 9S">
+        <motor template="engineMedium" file="$data/vehicles/masseyFerguson/series9S/sounds/series9S_loop.gls" volumeScale="2.5" linkNodeOffset="0 1.8 1.2"/>
+    </layer>
+    <layer name="engineMcCormickX8" group="engine" shortName="McCormick X8" source="McCormick X8 VT-Drive">
+        <motor template="engineMedium" file="$data/vehicles/mcCormick/x8VTDrive/sounds/x8VTDrive_loop.gls" volumeScale="1.75" linkNodeOffset="0 1.5 1.5"/>
+    </layer>
+    <layer name="engineNewHollandT8" group="engine" shortName="NH T8" source="New Holland T8">
+        <motor template="engineLarge" file="$data/vehicles/newHolland/t8/sounds/t8_loop.gls" volumeScale="2.2" linkNodeOffset="0 1.5 1.5"/>
+    </layer>
+    <layer name="engineNewHollandTK4" group="engine" shortName="NH TK4" source="New Holland TK4">
+        <motor template="engineSmall" file="$data/vehicles/newHolland/tk4/sounds/tk4_loop.gls" volumeScale="1.8" linkNodeOffset="0 1 1.2"/>
+    </layer>
+    <layer name="engineRigitracSKH60" group="engine" shortName="Rigitrac SKH 60" source="Rigitrac SKH 60">
+        <motor template="engineMedium" file="$data/vehicles/rigitrac/skh60/sounds/skh60.gls" volumeScale="1.45" linkNodeOffset="0 1 0"/>
+    </layer>
+    <layer name="engineValtraS" group="engine" shortName="Valtra S" source="Valtra S Series">
+        <motor template="engineMedium" file="$data/vehicles/valtra/sSeries/sounds/sSeries_loop.gls" volumeScale="1.45" linkNodeOffset="0 1.6 1.2"/>
+    </layer>
+    <layer name="engineZetorCrystal" group="engine" shortName="Zetor Crystal" source="Zetor Crystal">
+        <motor template="engineLarge" file="$data/vehicles/zetor/crystal/sounds/crystal_loop.gls" volumeScale="1.75" linkNodeOffset="0 1.5 1.2"/>
+    </layer>
+    <layer name="engineZetorForterra" group="engine" shortName="Zetor Forterra" source="Zetor Forterra HSX 140">
+        <motor template="engineLarge" file="$data/vehicles/zetor/forterraHSX140/sounds/forterraHSX140_loop.gls" volumeScale="1.7" linkNodeOffset="0 1.5 1.2"/>
+    </layer>
+    <layer name="engineZetorProxima" group="engine" shortName="Zetor Proxima" source="Zetor Proxima HS 120">
+        <motor template="engineLarge" file="$data/vehicles/zetor/proximaHS120/sounds/proximaHS120_loop.gls" volumeScale="2.1" linkNodeOffset="0 1.5 1.2"/>
+    </layer>
+
+    <!-- the vehicle's own engine a second time, shifted (clone of its main engine sample).
+         Two copies with close pitches beat (audible pulsing at the difference of their firing frequencies, e.g. 0.9 =
+         a 9:10 pattern that repeats at a tenth of the firing frequency, a few Hz). Small whole-number ratios repeat
+         fast enough to be heard as one sound: octave 1:2 (pitchFactor 0.5), fifth 2:3 (0.667). Hearing test
+         2026-10-02: octave and fifth kept, "Deeper" (0.9) and "Shifted" (rpm 1.15) removed (beating). -->
+    <layer name="ownEngineOctave" group="ownEngine" source="own" category="motor" pitchFactor="0.5" volumeFactor="1.8"/>
+    <layer name="ownEngineFifth" group="ownEngine" source="own" category="motor" pitchFactor="0.6667" volumeFactor="1.8"/>
+    <layer name="ownEngineLoad" group="ownEngine" source="own" category="motor" volumeFactor="0.8">
+        <motor>
+            <volume>
+                <modifier type="MOTOR_LOAD" value="0.3" modifiedValue="0"/>
+                <modifier type="MOTOR_LOAD" value="1.0" modifiedValue="1"/>
+            </volume>
+        </motor>
+    </layer>
+
+    <!-- exhausts (definitions from the base game vehicles, linkNodeOffset adapted to a generic tractor);
+         *Load: same sound, louder under load, quiet without load -->
+    <layer name="exhaustXerion" group="exhaust" source="CLAAS Xerion 12">
+        <motor template="engineLarge" file="$data/vehicles/claas/xerion12/sounds/xerion12Exhaust_loop.gls" volumeScale="2" linkNodeOffset="0 1.5 1" loopSynthesisRPMRatio="0.80" innerRadius="1">
+            <volume indoor="1.3" outdoor="1.3">
+                <modifier type="MOTOR_RPM_REAL" value="800" modifiedValue="0.8"/>
+                <modifier type="MOTOR_RPM_REAL" value="1100" modifiedValue="1.2"/>
+                <modifier type="MOTOR_RPM_REAL" value="1500" modifiedValue="1.1"/>
+                <modifier type="MOTOR_RPM_REAL" value="1700" modifiedValue="1.2"/>
+                <modifier type="MOTOR_RPM_REAL" value="1900" modifiedValue="1.3"/>
+            </volume>
+        </motor>
+    </layer>
+    <layer name="exhaustXerionLoad" group="exhaust" source="CLAAS Xerion 12">
+        <motor template="engineLarge" file="$data/vehicles/claas/xerion12/sounds/xerion12Exhaust_loop.gls" volumeScale="4.8" linkNodeOffset="0 1.5 1" loopSynthesisRPMRatio="0.80" innerRadius="1">
+            <volume indoor="1.3" outdoor="1.3">
+                <modifier type="MOTOR_RPM_REAL" value="800" modifiedValue="0.8"/>
+                <modifier type="MOTOR_RPM_REAL" value="1100" modifiedValue="1.2"/>
+                <modifier type="MOTOR_RPM_REAL" value="1500" modifiedValue="1.1"/>
+                <modifier type="MOTOR_RPM_REAL" value="1700" modifiedValue="1.2"/>
+                <modifier type="MOTOR_RPM_REAL" value="1900" modifiedValue="1.3"/>
+                <modifier type="MOTOR_LOAD" value="0.2" modifiedValue="0.15"/>
+                <modifier type="MOTOR_LOAD" value="1.0" modifiedValue="1.0"/>
+            </volume>
+        </motor>
+    </layer>
+    <layer name="exhaustMasseyBeta" group="exhaust" source="Massey Ferguson BETA 7360 AL-4">
+        <motor template="engineLarge" file="$data/vehicles/masseyFerguson/beta7360AL4/sounds/beta7360AL4_exhaust_loop.gls" volumeScale="2.2" linkNodeOffset="0 1.5 1" loopSynthesisRPMRatio="0.80" innerRadius="1"/>
+    </layer>
+    <layer name="exhaustMasseyBetaLoad" group="exhaust" source="Massey Ferguson BETA 7360 AL-4">
+        <motor template="engineLarge" file="$data/vehicles/masseyFerguson/beta7360AL4/sounds/beta7360AL4_exhaust_loop.gls" volumeScale="2.6" linkNodeOffset="0 1.5 1" loopSynthesisRPMRatio="0.80" innerRadius="1">
+            <volume>
+                <modifier type="MOTOR_LOAD" value="0.2" modifiedValue="0.15"/>
+                <modifier type="MOTOR_LOAD" value="1.0" modifiedValue="1.0"/>
+            </volume>
+        </motor>
+    </layer>
+    <layer name="exhaustPmTrac" group="exhaust" source="Pfanzelt Pm Trac">
+        <motor template="engineMedium" file="$data/vehicles/pfanzelt/pmTraclll/sounds/pmTraclll_exhaust_loop.gls" volumeScale="8.0" linkNodeOffset="0 1.5 1" innerRadius="2.5">
+            <volume indoor="0.75" outdoor="1.0"/>
+        </motor>
+    </layer>
+    <layer name="exhaustPmTracLoad" group="exhaust" source="Pfanzelt Pm Trac">
+        <motor template="engineMedium" file="$data/vehicles/pfanzelt/pmTraclll/sounds/pmTraclll_exhaust_loop.gls" volumeScale="9.6" linkNodeOffset="0 1.5 1" innerRadius="2.5">
+            <volume indoor="0.75" outdoor="1.0">
+                <modifier type="MOTOR_LOAD" value="0.2" modifiedValue="0.15"/>
+                <modifier type="MOTOR_LOAD" value="1.0" modifiedValue="1.0"/>
+            </volume>
+        </motor>
+    </layer>
+
+    <!-- load and tone layers: louder when the engine works -->
+    <!-- old engines only under load (hearing test 2026-10-02: "add more" to load & tone): the engine loop of an old
+         vehicle, quiet without load and full at full load, same curve as ownEngineLoad -->
+    <layer name="loadJohnDeere3650" group="load" source="John Deere 3650" category="motor">
+        <motor template="engineMedium" file="$data/vehicles/johnDeere/series3650/sounds/series3650.gls" volumeScale="1.2" linkNodeOffset="0 1.5 1.2">
+            <volume>
+                <modifier type="MOTOR_LOAD" value="0.3" modifiedValue="0"/>
+                <modifier type="MOTOR_LOAD" value="1.0" modifiedValue="1"/>
+            </volume>
+        </motor>
+    </layer>
+    <layer name="loadFiat90" group="load" source="Fiat 90 Series" category="motor">
+        <motor template="engineMediumVintage" file="$data/vehicles/fiat/series90/sounds/fiatagri90.gls" volumeScale="2.0" linkNodeOffset="0 1.5 1.2">
+            <volume>
+                <modifier type="MOTOR_LOAD" value="0.3" modifiedValue="0"/>
+                <modifier type="MOTOR_LOAD" value="1.0" modifiedValue="1"/>
+            </volume>
+        </motor>
+    </layer>
+    <layer name="loadDeutzAgroStar" group="load" source="Deutz-Fahr AgroStar 8.31" category="motor">
+        <motor template="engineMedium" file="$data/vehicles/deutzFahr/agroStar831/sounds/agroStar831.gls" volumeScale="2.2" linkNodeOffset="0 1.5 1.2">
+            <volume>
+                <modifier type="MOTOR_LOAD" value="0.3" modifiedValue="0"/>
+                <modifier type="MOTOR_LOAD" value="1.0" modifiedValue="1"/>
+            </volume>
+        </motor>
+    </layer>
+    <layer name="loadMackSuperliner" group="load" source="Mack Superliner 1979" category="motor">
+        <motor template="engineLarge" file="$data/vehicles/mack/superliner1979/sounds/superliner1979_loop.gls" volumeScale="1.6" linkNodeOffset="0 1.5 1.5">
+            <volume>
+                <modifier type="MOTOR_LOAD" value="0.3" modifiedValue="0"/>
+                <modifier type="MOTOR_LOAD" value="1.0" modifiedValue="1"/>
+            </volume>
+        </motor>
+    </layer>
+    <layer name="loadJohnDeere9RXLow" group="load" source="John Deere 9RX 830" category="motor">
+        <motor file="$data/vehicles/johnDeere/series9RX830/sounds/9RX830_lowLoad.wav" fadeIn="0.5" innerRadius="2.0" outerRadius="50.0" linkNodeOffset="0 1.8 1">
+            <volume indoor="1.0" outdoor="2.5">
+                <modifier type="MOTOR_RPM_REAL" value="850" modifiedValue="0.6"/>
+                <modifier type="MOTOR_RPM_REAL" value="1700" modifiedValue="1.20"/>
+                <modifier type="MOTOR_RPM_REAL" value="2000" modifiedValue="0.8"/>
+                <modifier type="MOTOR_RPM_REAL" value="2200" modifiedValue="0.2"/>
+                <modifier type="MOTOR_LOAD" value="0.3" modifiedValue="0"/>
+                <modifier type="MOTOR_LOAD" value="1" modifiedValue="1.0"/>
+            </volume>
+            <pitch indoor="1" outdoor="1">
+                <modifier type="MOTOR_RPM_REAL" value="850" modifiedValue="0.8"/>
+                <modifier type="MOTOR_RPM_REAL" value="1200" modifiedValue="0.8"/>
+                <modifier type="MOTOR_RPM_REAL" value="1600" modifiedValue="0.9"/>
+                <modifier type="MOTOR_RPM_REAL" value="2000" modifiedValue="1.1"/>
+            </pitch>
+            <lowpassGain indoor="0.65" outdoor="1.00"/>
+        </motor>
+    </layer>
+    <layer name="loadJohnDeere9RXHigh" group="load" source="John Deere 9RX 830" category="motor">
+        <motor file="$data/vehicles/johnDeere/series9RX830/sounds/9RX830_highLoad.wav" fadeIn="0.5" fadeOut="2" innerRadius="10.0" outerRadius="50.0" linkNodeOffset="0 1.8 1">
+            <volume indoor="1.3" outdoor="2.5">
+                <modifier type="MOTOR_RPM_REAL" value="850" modifiedValue="0.1"/>
+                <modifier type="MOTOR_RPM_REAL" value="1300" modifiedValue="0.4"/>
+                <modifier type="MOTOR_RPM_REAL" value="1800" modifiedValue="0.65"/>
+                <modifier type="MOTOR_RPM_REAL" value="2200" modifiedValue="1.0"/>
+                <modifier type="MOTOR_LOAD" value="0.5" modifiedValue="0.3"/>
+                <modifier type="MOTOR_LOAD" value="1" modifiedValue="1.0"/>
+            </volume>
+            <pitch indoor="1.0" outdoor="1.0">
+                <modifier type="MOTOR_RPM_REAL" value="1200" modifiedValue="0.8"/>
+                <modifier type="MOTOR_RPM_REAL" value="2300" modifiedValue="1.0"/>
+                <modifier type="MOTOR_LOAD" value="0" modifiedValue="0.9"/>
+                <modifier type="MOTOR_LOAD" value="1" modifiedValue="1.0"/>
+            </pitch>
+            <lowpassGain indoor="0.65" outdoor="1.00"/>
+            <lowpassCutoffFrequency indoor="1000" outdoor="20000"/>
+        </motor>
+    </layer>
+    <layer name="toneJohnDeere9RX" group="load" source="John Deere 9RX 830">
+        <motor template="engineMedium" file="$data/vehicles/johnDeere/series9RX830/sounds/9RX185_tone.gls" linkNodeOffset="0 1.8 0" volumeScale="1.7">
+            <volume outdoor="1.0" indoor="0.4"/>
+        </motor>
+    </layer>
+    <layer name="externalMasseyBeta" group="load" source="Massey Ferguson BETA 7360 AL-4">
+        <motor template="engineLarge" file="$data/vehicles/masseyFerguson/beta7360AL4/sounds/beta7360AL4_external_loop.gls" linkNodeOffset="0 1.2 0" loopSynthesisRPMRatio="0.80" innerRadius="1" fadeIn="0.5" fadeOut="0.5">
+            <volume indoor="1.0" outdoor="1.5"/>
+        </motor>
+    </layer>
+    <layer name="loadLoop" group="load" baseGameFile="load_loop_1_2100rpm" category="motor">
+        <motor file="$data/sounds/vehicles/load/load_loop_1_2100rpm.ogg" linkNodeOffset="0 1.8 1" volumeScale="1.0" innerRadius="2" outerRadius="50">
+            <volume indoor="0.6" outdoor="1.0">
+                <modifier type="MOTOR_RPM_REAL" value="800" modifiedValue="0.5"/>
+                <modifier type="MOTOR_RPM_REAL" value="2100" modifiedValue="1.0"/>
+                <modifier type="MOTOR_LOAD" value="0.2" modifiedValue="0.0"/>
+                <modifier type="MOTOR_LOAD" value="1.0" modifiedValue="1.0"/>
+            </volume>
+            <pitch indoor="1.0" outdoor="1.0">
+                <modifier type="MOTOR_RPM_REAL" value="800" modifiedValue="0.55"/>
+                <modifier type="MOTOR_RPM_REAL" value="1400" modifiedValue="0.75"/>
+                <modifier type="MOTOR_RPM_REAL" value="2100" modifiedValue="1.0"/>
+                <modifier type="MOTOR_RPM_REAL" value="2400" modifiedValue="1.1"/>
+            </pitch>
+            <lowpassGain indoor="0.6" outdoor="1.0"/>
+        </motor>
+    </layer>
+
+    <!-- transmissions: mechanical loops with the modifiers of the vintage template (file replaced), the truck
+         transmission and two modern ones for comparison (templates from data/sounds/soundTemplates.xml) -->
+    <layer name="transmissionTruckLoop" group="gearbox" baseGameFile="truckTransmissionLoop" category="gearbox">
+        <motor template="transmissionMediumVintage" file="$data/sounds/vehicles/transmission/truckTransmissionLoop.ogg" linkNodeOffset="0 0.8 0"/>
+    </layer>
+    <layer name="transmissionSteyrLoop" group="gearbox" baseGameFile="steyrTransmissionLoop" category="gearbox">
+        <motor template="transmissionMediumVintage" file="$data/sounds/vehicles/transmission/steyrTransmissionLoop.ogg" linkNodeOffset="0 0.8 0"/>
+    </layer>
+    <layer name="transmissionJohnDeereLoop" group="gearbox" baseGameFile="johnDeereTransmissionLoop" category="gearbox">
+        <motor template="transmissionMediumVintage" file="$data/sounds/vehicles/transmission/johnDeereTransmissionLoop.ogg" linkNodeOffset="0 0.8 0"/>
+    </layer>
+    <layer name="transmissionVintage" group="gearbox" baseGameFile="transmissionMediumVintage" category="gearbox">
+        <motor template="transmissionMediumVintage" linkNodeOffset="0 0.8 0"/>
+    </layer>
+    <layer name="transmissionTruck01" group="gearbox" baseGameFile="transmissionTruck_01" category="gearbox">
+        <motor template="transmissionTruck_01" linkNodeOffset="0 0.8 0"/>
+    </layer>
+    <layer name="transmissionModern03" group="gearbox" baseGameFile="transmissionModern_03" category="gearbox">
+        <motor template="transmissionModern_03" linkNodeOffset="0 0.8 0"/>
+    </layer>
+    <layer name="transmissionModern08" group="gearbox" baseGameFile="transmissionModern_08" category="gearbox">
+        <motor template="transmissionModern_08" linkNodeOffset="0 0.8 0"/>
+    </layer>
+
+    <!-- immersion sounds (v0.18.0.0, user 2026-10-13): one group each, so rattle, rumble and fan can play
+         together (turbo group removed in v0.18.1.0, user test 2026-10-15: sounded bad in every variant).
+         needsSuspension="true": the sound uses the SUSPENSION modifier (Suspensions:getSuspensionModfier,
+         dataS.gar Suspensions.lua:267, reads spec_suspensions without a nil check), so it is only attached to vehicles
+         with that specialization; without suspension nodes it stays silent. Start volumes = values of the source
+         vehicles, to be calibrated in a hearing test. v0.18.1.0 (user test 2026-10-15): rattle and rumble 1.5x, before
+         attacherClanks 1.5 (template), indoorCabinRumble / indoorCabinOldVehicle 9, JD 9RX 10 -->
+    <!-- rattling parts (template attacherClanks: JD 3650 1.3, Challenger MT655 / Deutz AgroStar 2.0, template 1.5) -->
+    <layer name="rattleAttacherClanks" group="rattle" baseGameFile="attacherClanks" needsSuspension="true">
+        <motor template="attacherClanks" volumeScale="2.25" linkNodeOffset="0 0.7 -1.5" outerRadius="40"/>
+    </layer>
+    <!-- cabin rumble over bumps, inside only (template indoorCabinRumble, most tractors 8 .. 9; indoorCabinOldVehicle is
+         not used by any base game vehicle, inside 2.2x as loud; JD 9RX 830 own file, block from series9RX830.xml) -->
+    <layer name="rumbleCabin" group="rumble" baseGameFile="indoorCabinRumble" needsSuspension="true">
+        <motor template="indoorCabinRumble" volumeScale="13.5" pitchScale="1.1" linkNodeOffset="0 2.5 0"/>
+    </layer>
+    <layer name="rumbleCabinOld" group="rumble" baseGameFile="indoorCabinOldVehicle" needsSuspension="true">
+        <motor template="indoorCabinOldVehicle" volumeScale="13.5" linkNodeOffset="0 2.5 0"/>
+    </layer>
+    <layer name="rumbleJohnDeere9RX" group="rumble" source="John Deere 9RX 830" needsSuspension="true">
+        <motor file="$data/vehicles/johnDeere/series9RX830/sounds/cabinRumble_JD.wav" linkNodeOffset="0 2 -0.3" innerRadius="5.0" outerRadius="15.0" volumeScale="15" isLocalSound="true" supportsReverb="false" pitchScale="0.9">
+            <volume indoor="1.00" outdoor="0.10">
+                <modifier type="SUSPENSION" value="-0.15" modifiedValue="0.4"/>
+                <modifier type="SUSPENSION" value="-0.07" modifiedValue="0.4"/>
+                <modifier type="SUSPENSION" value="-0.02" modifiedValue="0.35"/>
+                <modifier type="SUSPENSION" value="-0.01" modifiedValue="0.28"/>
+                <modifier type="SUSPENSION" value="0.0"   modifiedValue="0.0"/>
+                <modifier type="SUSPENSION" value="0.01"  modifiedValue="0.28"/>
+                <modifier type="SUSPENSION" value="0.02"  modifiedValue="0.35"/>
+                <modifier type="SUSPENSION" value="0.07"  modifiedValue="0.4"/>
+                <modifier type="SUSPENSION" value="0.15"  modifiedValue="0.4"/>
+            </volume>
+            <pitch indoor="1.00" outdoor="0.5">
+                <modifier type="SPEED" value="0.0" modifiedValue="0.6"/>
+                <modifier type="SPEED" value="80.0" modifiedValue="0.7"/>
+            </pitch>
+            <lowpassGain indoor="0.4" outdoor="0.3"/>
+            <lowpassCutoffFrequency indoor="200.0" outdoor="20000.0"/>
+            <randomization minVolume="-0.2" maxVolume="0.0" minPitch="-0.1" maxPitch="0.4" isInside="true" isOutside="false"/>
+        </motor>
+    </layer>
+    <!-- engine fan (templates fan*, category cabin like the vehicles' own fans): old fan of the Deutz AgroStar 8.31,
+         big modern fan of the New Holland T8 (pitch follows the suspension), modern fan and truck fan with the most
+         common values of the base game. v0.18.1.0: all 1.5x (user test 2026-10-15: "a bit too quiet at 100 %"),
+         before AgroStar 1.8, T8 1.5, modern 2, truck 2.4 (template) -->
+    <layer name="fanOldAgroStar" group="fan" source="Deutz-Fahr AgroStar 8.31">
+        <motor template="fanOld_01" volumeScale="2.7" pitchScale="1" linkNodeOffset="0 1.5 2"/>
+    </layer>
+    <layer name="fanModernBigT8" group="fan" source="New Holland T8" needsSuspension="true">
+        <motor template="fanModernBig_01" volumeScale="2.25" linkNodeOffset="0 2 2.5"/>
+    </layer>
+    <layer name="fanModern" group="fan" baseGameFile="fanModern_02">
+        <motor template="fanModern_02" volumeScale="3" pitchScale="0.8" linkNodeOffset="0 1.5 2"/>
+    </layer>
+    <layer name="fanTruck" group="fan" baseGameFile="fanTruck_01">
+        <motor template="fanTruck_01" volumeScale="3.6" linkNodeOffset="0 1.5 2"/>
+    </layer>
+</layers>

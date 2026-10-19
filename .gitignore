@@ -1,0 +1,10 @@
+# build output (build.ps1 writes to %TEMP% and the mods folder, this is just a safety net)
+*.zip
+
+# preview written by tools/make_icon.ps1
+*.preview.png
+
+# editor / OS
+.vscode/
+*.bak
+Thumbs.db

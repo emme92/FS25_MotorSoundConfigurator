@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<modDesc descVersion="114">
+    <author>Emme92</author>
+    <version>1.0.0.0</version>
+    <title>
+        <en>Motor Sound Configurator</en>
+    </title>
+    <description>
+        <en><![CDATA[Mod for Farming Simulator 25 (PC / Mac, contains scripts).
+
+Description:
+Adjust the engine and transmission sound of your vehicles in game, without editing XML files. All changes are audible immediately.
+- Presets: ready-made settings for the vehicle model (punchier, more bass, insulated cabin ...), combinable
+- Engine swap: replace the engine sound of a vehicle model completely with the engine of another base game vehicle (tractors, trucks, a combine)
+- Engine & gearbox: volume, pitch & speed, RPM character
+- Other sounds: volume of cabin sound and fan, rattling parts and work sounds of harvesters (work unit, discharge & filling); attached implements (work, drive) and trailers (driving rattle) per model, e.g. header, mower, seeder
+- Filter: how open the cabin sounds (up to "like outside"), tone and presence in the cabin and outside, with an overview of how muffled the vehicle is
+- Extra sounds: mix in exhausts, engines or transmissions of other base game vehicles, plus rattling, cabin rumble and fan
+- Preview: hear your setting at any RPM and load while standing still, compare with the original
+- Settings for all vehicles or for a single vehicle model, relative to the original sound (100 % = original)
+- Saved per savegame
+Single sounds (starter, gear shifts, retarder, blow-off) stay unchanged.
+Multiplayer: works on your side only, every player has their own settings (saved in modSettings), nothing is sent to other players.
+
+Hotkeys:
+- Open (in a motorized vehicle): Alt + M; controller: assign a button in Options > Controls ("Adjust engine sound")
+- In the configurator, keyboard / mouse: Apply = Enter; Cancel = Esc; Reset (tab) = Space; Reset model = X key; switch tab = Q / E; select = mouse
+- In the configurator, controller: Apply = press right stick; Cancel = B; Reset (tab) = X button; Reset model = press left stick; switch tab = LB / RB; select = A
+- All keys can be changed in Options > Controls ("Adjust engine sound")
+
+GitHub (source code): https://github.com/emme92/FS25_MotorSoundConfigurator
+
+License: GNU General Public License v3 (https://www.gnu.org/licenses/gpl-3.0.html), (C) 2026 Emme92.]]></en>
+        <de><![CDATA[Mod für Farming Simulator 25 (PC / Mac, enthält Skripte).
+
+Beschreibung:
+Stelle den Motor- und Getriebesound deiner Fahrzeuge direkt im Spiel ein, ohne XML-Dateien zu bearbeiten. Jede Änderung ist sofort zu hören.
+- Presets: fertige Einstellungen für das Fahrzeug-Modell (kerniger, mehr Bass, gedämmte Kabine ...), kombinierbar
+- Motor-Tausch: den Motor-Sound eines Fahrzeug-Modells ganz durch den Motor eines anderen Basisspiel-Fahrzeugs ersetzen (Traktoren, Lkw, ein Mähdrescher)
+- Motor & Getriebe: Lautstärke, Tonhöhe & Tempo, Drehzahl-Charakter
+- Geräusche: Lautstärke von Kabinengeräusch und Lüfter, klappernden Anbauteilen und Arbeitsgeräuschen von Erntemaschinen (Arbeitswerk, Auswurf & Befüllen); angehängte Anbaugeräte (Arbeit, Antrieb) und Anhänger (Fahr-Klappern) pro Modell, z. B. Schneidwerk, Mähwerk, Sämaschine
+- Dämpfung: wie offen die Kabine klingt (bis „wie draußen“), Klangfarbe und Präsenz in der Kabine und draußen, mit Übersicht, wie gedämpft das Fahrzeug ist
+- Zusatz-Sounds: Auspuff, Motoren oder Getriebe anderer Basisspiel-Fahrzeuge dazumischen, dazu Klappern, Kabinen-Rumpeln und Lüfter
+- Vorschau: deine Einstellung im Stand bei jeder Drehzahl und Last anhören, mit dem Original vergleichen
+- Einstellungen für alle Fahrzeuge oder für ein einzelnes Fahrzeug-Modell, relativ zum Original-Sound (100 % = Original)
+- Gespeichert pro Spielstand
+Einzelgeräusche (Anlasser, Schalten, Retarder, Blow-off) bleiben unverändert.
+Multiplayer: wirkt nur bei dir, jeder Spieler hat eigene Einstellungen (gespeichert in modSettings), an andere Spieler wird nichts gesendet.
+
+Tastenbelegung:
+- Öffnen (in einem motorisierten Fahrzeug): Alt + M; Controller: unter Optionen > Steuerung eine Taste belegen („Motorsound einstellen“)
+- Im Configurator, Tastatur / Maus: Übernehmen = Enter; Abbrechen = Esc; Zurücksetzen (Reiter) = Leertaste; Modell zurücksetzen = Taste X; Reiter wechseln = Q / E; auswählen = Maus
+- Im Configurator, Controller: Übernehmen = rechten Stick drücken; Abbrechen = B; Zurücksetzen (Reiter) = Knopf X; Modell zurücksetzen = linken Stick drücken; Reiter wechseln = LB / RB; auswählen = A
+- Alle Tasten lassen sich unter Optionen > Steuerung ändern („Motorsound einstellen“)
+
+GitHub (Quellcode): https://github.com/emme92/FS25_MotorSoundConfigurator
+
+Lizenz: GNU General Public License v3 (https://www.gnu.org/licenses/gpl-3.0.html), (C) 2026 Emme92.]]></de>
+    </description>
+    <iconFilename>icon_motorSoundConfigurator.dds</iconFilename>
+    <multiplayer supported="true"/>
+    <l10n filenamePrefix="l10n/l10n"/>
+    <extraSourceFiles>
+        <!-- order matters: the core file creates the global table, the dialog needs PARAMETERS at load time,
+             Hooks.lua installs the hooks at load time, main.lua registers the mod event listener last -->
+        <sourceFile filename="src/MotorSoundConfigurator.lua"/>
+        <sourceFile filename="src/Settings.lua"/>
+        <sourceFile filename="src/SampleAdjuster.lua"/>
+        <sourceFile filename="src/Layers.lua"/>
+        <sourceFile filename="src/Presets.lua"/>
+        <sourceFile filename="src/EngineSwap.lua"/>
+        <sourceFile filename="src/Hooks.lua"/>
+        <sourceFile filename="src/ConsoleCommands.lua"/>
+        <sourceFile filename="src/MotorSoundConfiguratorDialog.lua"/>
+        <sourceFile filename="src/main.lua"/>
+    </extraSourceFiles>
+    <actions>
+        <action name="MSC_OPEN_CONFIGURATOR" category="VEHICLE" axisType="HALF"/>
+    </actions>
+    <inputBinding>
+        <actionBinding action="MSC_OPEN_CONFIGURATOR">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_lalt KEY_m"/>
+            <!-- RB + View: free in the default gamepad profile (profileTemplate/inputBindingDefault_Gamepad.xml) -->
+            <binding device="GAMEPAD_DEFAULT" input="BUTTON_6 BUTTON_9"/>
+        </actionBinding>
+    </inputBinding>
+</modDesc>

@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<l10n>
+    <elements>
+        <e k="msc_title" v="Motor Sound Configurator"/>
+        <e k="input_MSC_OPEN_CONFIGURATOR" v="Motorsound einstellen"/>
+
+        <e k="msc_scope" v="Gilt für"/>
+        <e k="msc_scope_global" v="Alle Fahrzeuge"/>
+        <e k="msc_scope_model" v="Nur dieses Modell"/>
+        <e k="msc_category_motor" v="Motor"/>
+        <e k="msc_category_gearbox" v="Getriebe"/>
+        <e k="msc_category_cabin" v="Kabine &amp; Lüfter"/>
+        <e k="msc_help_cabin_volume" v="Lautstärke von Kabinengeräusch, Kabinen-Rumpeln und Lüfter.&#10;Diese Sounds hängen nicht an Motor oder Getriebe und bleiben sonst auch bei 0 % hörbar.&#10;100 % = Original."/>
+        <e k="msc_category_rattle" v="Anbauteile-Klappern"/>
+        <e k="msc_help_rattle_volume" v="Lautstärke des Klapperns von Anbauteilen am Fahrzeug selbst (z. B. Hubwerk, Kupplung), ausgelöst bei Bodenwellen. Das Klappern von Anhängern und Anbaugeräten ist „Fahr-Klappern“ in der Tabelle darunter.&#10;Bei „Nur dieses Modell“ ausgeblendet, wenn das Fahrzeug diesen Sound nicht hat. Der Zusatz-Sound „Anbauteile-Klappern“ hat seinen eigenen Regler.&#10;100 % = Original."/>
+        <e k="msc_category_work" v="Arbeitswerk"/>
+        <e k="msc_category_discharge" v="Auswurf &amp; Befüllen"/>
+        <e k="msc_help_work_volume" v="Lautstärke des Arbeitswerks von Erntemaschinen: Dresch- oder Häckselwerk samt Hoch- und Auslaufen, Strohhäcksler, auch das Arbeitswerk anderer Maschinen (z. B. Krone BiG M). Schneid- und Rodegeräusche der Maschine selbst bleiben unverändert, Anbaugeräte (Schneidwerk, Maisgebiss) stehen in der Tabelle darunter.&#10;Bei „Nur dieses Modell“ ausgeblendet, wenn das Fahrzeug keine solchen Sounds hat. 100 % = Original."/>
+        <e k="msc_help_discharge_volume" v="Lautstärke von Auswurf und Befüllen bei Erntemaschinen, z. B. Häcksler-Auswurf, Stroh häckseln oder ablegen, Korntank füllen, Signal beim Abtanken. Das fließende Korn beim Abtanken bleibt unverändert.&#10;Bei „Nur dieses Modell“ ausgeblendet, wenn das Fahrzeug keine solchen Sounds hat. 100 % = Original."/>
+        <e k="msc_category_implementWork" v="Arbeit"/>
+        <e k="msc_category_implementDrive" v="Antrieb"/>
+        <e k="msc_category_implementRattle" v="Fahr-Klappern"/>
+        <e k="msc_help_implementRattle_volume" v="Lautstärke des Klapperns und Rumpelns von Anhänger oder Anbaugerät, solange es rollt. Nicht das Anbauteile-Klappern des Zugfahrzeugs (Block „Fahrzeug“).&#10;Gilt für das Modell des Anhängers bzw. Anbaugeräts. Unter „Alle Fahrzeuge“ (Zeile „Alle Anhänger &amp; Anbaugeräte“) für alle.&#10;100 % = Original."/>
+        <e k="msc_help_implementWork_volume" v="Lautstärke der Arbeit des Anbaugeräts: Schneiden, Mähen, Säen, Grubbern, Pflügen, Walzen, Sprühen, Pressen, Wenden, Schwaden, Wickeln.&#10;Gilt für das Modell des Anbaugeräts, nicht für das Zugfahrzeug. Unter „Alle Fahrzeuge“ für alle Anbaugeräte.&#10;100 % = Original."/>
+        <e k="msc_help_implementDrive_volume" v="Lautstärke des Antriebs des Anbaugeräts: was beim Einschalten läuft, z. B. Zapfwelle, Gebläse der Sämaschine, Pumpe der Spritze, samt Hoch- und Auslaufen.&#10;Gilt für das Modell des Anbaugeräts, nicht für das Zugfahrzeug. Unter „Alle Fahrzeuge“ für alle Anbaugeräte.&#10;100 % = Original."/>
+        <e k="msc_tab_sound" v="Motor &amp; Getriebe"/>
+        <e k="msc_tab_other" v="Geräusche"/>
+        <e k="msc_block_vehicle" v="Fahrzeug"/>
+        <e k="msc_block_implements" v="Anbaugeräte"/>
+        <e k="msc_block_trailers" v="Anhänger"/>
+        <e k="msc_implement_all" v="Alle Anbaugeräte"/>
+        <e k="msc_trailer_all" v="Alle Anhänger &amp; Anbaugeräte"/>
+        <e k="msc_tab_layers" v="Zusatz-Sounds"/>
+        <e k="msc_tab_filter" v="Dämpfung"/>
+        <e k="msc_help_tab_filter" v="Wie gedämpft Motor und Getriebe klingen. Stell dir die Kabine als Wand zwischen dir und dem Motor vor: Hier stellst du ein, wie viel durchkommt, in der Kabine und draußen."/>
+        <e k="msc_block_basic" v="Grundklang"/>
+        <e k="msc_block_indoor" v="In der Kabine"/>
+        <e k="msc_block_outdoor" v="Draußen"/>
+        <e k="msc_block_filterInfo" v="Dieses Fahrzeug"/>
+        <e k="msc_filterInfo_indoor" v="In der Kabine"/>
+        <e k="msc_filterInfo_outdoor" v="Draußen"/>
+        <e k="msc_filterInfo_now" v="%s, jetzt %s"/>
+        <e k="msc_muffle_open" v="offen"/>
+        <e k="msc_muffle_light" v="leicht gedämpft"/>
+        <e k="msc_muffle_medium" v="gedämpft"/>
+        <e k="msc_muffle_strong" v="stark gedämpft"/>
+        <e k="msc_label_tone" v="Klangfarbe"/>
+        <e k="msc_label_presence" v="Präsenz"/>
+        <e k="msc_label_openness" v="Offenheit"/>
+        <e k="msc_original_off" v="Original anhören"/>
+        <e k="msc_original_on" v="Original läuft"/>
+        <e k="msc_live_rpm" v="Drehzahl"/>
+        <e k="msc_live_load" v="Last"/>
+        <e k="msc_live_off" v="Motor aus"/>
+        <e k="msc_live_rpmUnit" v="U/min"/>
+        <e k="msc_preview" v="Vorschau"/>
+        <e k="msc_preview_live" v="Live"/>
+        <e k="msc_preview_reset" v="Zurück auf Live"/>
+        <e k="msc_help_previewReset" v="Setzt Drehzahl und Last der Vorschau wieder auf Live (echte Werte)."/>
+        <e k="msc_help_previewRpm" v="Der Motor klingt, als liefe er mit dieser Drehzahl, ohne wirklich hochzudrehen.&#10;Live = echte Drehzahl. Gilt nur, solange dieses Menü offen ist.&#10;Getriebe-Sounds hängen von der Geschwindigkeit ab und bleiben live."/>
+        <e k="msc_help_previewLoad" v="Der Motor klingt, als wäre er so stark belastet (z. B. beim Ziehen).&#10;Live = echte Last. Gilt nur, solange dieses Menü offen ist."/>
+        <e k="msc_layer_column_sound" v="Sound"/>
+        <e k="msc_layer_column_volume" v="Lautstärke"/>
+
+        <e k="msc_param_volume" v="Lautstärke"/>
+        <e k="msc_param_pitch" v="Tonhöhe &amp; Tempo"/>
+        <e k="msc_param_rpm" v="Drehzahl-Charakter"/>
+        <e k="msc_param_cutoffIndoor" v="Kabine: Klangfarbe"/>
+        <e k="msc_param_gainIndoor" v="Kabine: Präsenz"/>
+        <e k="msc_param_indoorDamping" v="Kabine: Offenheit"/>
+        <e k="msc_param_cutoffOutdoor" v="Außen: Klangfarbe"/>
+        <e k="msc_param_gainOutdoor" v="Außen: Präsenz"/>
+
+        <e k="msc_help_scope" v="Alle Fahrzeuge: gilt für jedes Fahrzeug.&#10;Nur dieses Modell: eigene Werte für alle Fahrzeuge dieses Modells, nicht gesetzte Werte kommen von „Alle Fahrzeuge“.&#10;Weißer Wert = eigener Wert dieses Modells, grau = von „Alle Fahrzeuge“, * = anders als das Original."/>
+        <e k="msc_help_tab_sound" v="Lautstärke, Tonhöhe und Drehzahl-Charakter von Motor und Getriebe, für alle Fahrzeuge oder nur dieses Modell."/>
+        <e k="msc_help_tab_other" v="Lautstärke der übrigen Geräusche: Kabine &amp; Lüfter, Anbauteile-Klappern, Arbeitsgeräusche von Erntemaschinen, dann je eine Zeile pro angehängtem Anbaugerät (Arbeit, Antrieb) und Anhänger (Fahr-Klappern).&#10;Bei „Nur dieses Modell“ gelten die Werte einer Anhänger-Zeile für das Modell des Anhängers bzw. Anbaugeräts."/>
+        <e k="msc_help_tab_layers" v="Weitere Sounds dazumischen, ein Sound pro Art, gilt immer für dieses Modell."/>
+        <e k="msc_tab_presets" v="Presets"/>
+        <e k="msc_help_tab_presets" v="Fertige Einstellungen, gelten immer für dieses Modell. Ein Preset ändert nur seine eigenen Werte, mehrere lassen sich kombinieren; wo sie sich überschneiden, gewinnt das zuletzt gewählte.&#10;Grün = aktiv. Erneuter Klick auf ein aktives Preset entfernt es: seine Werte zurück auf „(global)“, seine Zusatz-Sounds aus.&#10;Auf den anderen Reitern kannst du danach alles weiter anpassen."/>
+
+        <!-- Reiter Motor-Tausch (src/EngineSwap.lua); die Knopf-Texte sind die shortName-Werte aus sounds/layers.xml -->
+        <e k="msc_tab_swap" v="Motor-Tausch"/>
+        <e k="msc_help_tab_swap" v="Ersetzt den Motor-Sound dieses Modells ganz durch den Motor eines anderen Fahrzeugs, gilt immer für dieses Modell.&#10;Grün = aktiv. „Eigener Motor“ oder ein Klick auf den aktiven Motor = zurück zum eigenen Motor-Sound."/>
+        <e k="msc_swap_own" v="Eigener Motor"/>
+        <e k="msc_help_swap_own" v="Der eigene Motor-Sound des Fahrzeugs, kein Tausch."/>
+        <e k="msc_help_swap_engine" v="Eigener Motor auf 0 %% (auch Zusatz-Sounds „Eigener Motor“ aus), stattdessen der Motor des %s.&#10;Erneuter Klick = zurück zum eigenen Motor."/>
+        <e k="msc_swap_volume" v="Tausch-Motor"/>
+        <e k="msc_swap_unavailable" v="Kein Motor-Tausch möglich: Dieses Fahrzeug hat keinen eigenen Motor-Sound."/>
+        <e k="msc_help_swap_volume" v="Lautstärke des getauschten Motors (10–300 %).&#10;100 % = etwa so laut wie in seinem eigenen Fahrzeug. Nur während eines Tauschs."/>
+
+        <!-- Presets (src/Presets.lua): Name und Beschreibung; die Werte listet der Dialog selbst auf -->
+        <e k="msc_preset_column_cabin" v="Kabine"/>
+        <e k="msc_preset_line" v="%s – %s"/>
+        <e k="msc_preset_separator" v="  ·  "/>
+        <e k="msc_preset_punchy" v="Kerniger"/>
+        <e k="msc_preset_deeper" v="Brummiger"/>
+        <e k="msc_preset_moreBass" v="Mehr Bass"/>
+        <e k="msc_preset_morePunchUnderLoad" v="Mehr Druck unter Last"/>
+        <e k="msc_preset_gearboxQuieter" v="Leiser"/>
+        <e k="msc_preset_gearboxPresent" v="Präsenter"/>
+        <e k="msc_preset_gearboxLessShrill" v="Weniger schrill"/>
+        <e k="msc_preset_gearboxMuffled" v="Gedämpfter"/>
+        <e k="msc_preset_cabinInsulated" v="Gedämmt"/>
+        <e k="msc_preset_cabinOpen" v="Offen / Oldtimer"/>
+        <e k="msc_help_preset_punchy" v="Motor lauter und voller, Kabine &amp; Lüfter leiser, damit sie ihn nicht überdecken."/>
+        <e k="msc_help_preset_deeper" v="Motor tiefer und dunkler, der Takt wird etwas langsamer."/>
+        <e k="msc_help_preset_moreBass" v="Mischt den eigenen Motor eine Oktave tiefer dazu."/>
+        <e k="msc_help_preset_morePunchUnderLoad" v="Mischt einen allgemeinen Sound dazu, der einsetzt, wenn der Motor arbeitet."/>
+        <e k="msc_help_preset_gearboxQuieter" v="Getriebe halb so laut."/>
+        <e k="msc_help_preset_gearboxPresent" v="Getriebe lauter und präsenter in der Kabine."/>
+        <e k="msc_help_preset_gearboxLessShrill" v="Getriebe-Heulen tiefer und mit weniger Höhen, in der Kabine und außen."/>
+        <e k="msc_help_preset_gearboxMuffled" v="Wie „Weniger schrill“, aber leiser und stärker gedämpft, in der Kabine und außen."/>
+        <e k="msc_help_preset_cabinInsulated" v="Gut gedämmte Kabine: Motor und Getriebe gedämpfter, Kabine &amp; Lüfter leiser."/>
+        <e k="msc_help_preset_cabinOpen" v="Offene oder alte Kabine: Motor und Getriebe kaum gedämpft, dazu ein altes Getriebe."/>
+        <e k="msc_preset_exhaustOpen" v="Offen"/>
+        <e k="msc_preset_exhaustBig" v="Groß"/>
+        <e k="msc_help_preset_exhaustOpen" v="Mischt einen rauen Auspuff dazu, der laut wird, wenn der Motor arbeitet."/>
+        <e k="msc_help_preset_exhaustBig" v="Mischt den tiefen Auspuff eines großen Traktors dazu, laut, wenn der Motor arbeitet."/>
+        <e k="msc_help_original" v="Schaltet alle Änderungen und Zusatz-Sounds vorübergehend ab, zum Vergleich mit dem Original.&#10;Noch einmal klicken = wieder dein Klang. Jede Änderung an einem Regler schaltet es ebenfalls ab."/>
+        <e k="msc_help_layerVolume" v="Lautstärke des gewählten Zusatz-Sounds (10–300 %).&#10;Unabhängig von der Lautstärke unter „Motor &amp; Getriebe“."/>
+        <e k="msc_help_layer" v="Mischt diesen Sound zum Fahrzeug dazu. Läuft mit dem Motor an und aus.&#10;Aus = nicht aktiv, sonst die Lautstärke des Zusatz-Sounds."/>
+        <e k="msc_layer_off" v="Aus"/>
+        <e k="msc_layer_source" v="Quelle: %s"/>
+        <e k="msc_layer_baseGame" v="Basisspiel (%s)"/>
+
+        <!-- layer groups (sounds/layers.xml) -->
+        <e k="msc_group_engine" v="Motor"/>
+        <e k="msc_group_ownEngine" v="Eigener Motor"/>
+        <e k="msc_group_exhaust" v="Auspuff"/>
+        <e k="msc_group_load" v="Last &amp; Ton"/>
+        <e k="msc_group_gearbox" v="Getriebe"/>
+        <e k="msc_group_rattle" v="Anbauteile-Klappern"/>
+        <e k="msc_group_rumble" v="Rumpeln"/>
+        <e k="msc_group_fan" v="Lüfter"/>
+        <e k="msc_help_group_engine" v="Mischt den Motor eines anderen Fahrzeugs dazu. Die klassischen (raueren, kernigeren) Motoren stehen vorne.&#10;Aus = nicht aktiv."/>
+        <e k="msc_help_group_ownEngine" v="Mischt den eigenen Motor ein zweites Mal dazu: eine Oktave oder Quinte tiefer (mehr Bass, ohne Schwebung) oder nur unter Last.&#10;Aus = nicht aktiv."/>
+        <e k="msc_help_group_exhaust" v="Mischt ein Auspuffgeräusch dazu.&#10;(Last) = laut, wenn der Motor arbeitet, leise ohne Last.  ·  Aus = nicht aktiv."/>
+        <e k="msc_help_group_load" v="Sounds, die vor allem hörbar werden, wenn der Motor arbeitet.&#10;(Last) = der Motor eines anderen Fahrzeugs, der erst unter Last einsetzt.  ·  Aus = nicht aktiv."/>
+        <e k="msc_help_group_gearbox" v="Mischt ein Getriebegeräusch dazu, es folgt der Fahrgeschwindigkeit.&#10;Tipp: Stell das eigene Getriebe unter „Motor &amp; Getriebe“ leiser oder unter „Dämpfung“ dunkler.  ·  Aus = nicht aktiv."/>
+        <e k="msc_help_group_rattle" v="Mischt Klappern von Anbauteilen dazu, es folgt den Stößen der Kabinen- oder Sitzfederung (Bodenwellen).&#10;Nur bei Fahrzeugen mit gefederter Kabine oder gefedertem Sitz hörbar.  ·  Aus = nicht aktiv."/>
+        <e k="msc_help_group_rumble" v="Mischt ein Rumpeln dazu, es folgt den Stößen der Kabinen- oder Sitzfederung und ist nur in der Kabine hörbar.&#10;Nur bei Fahrzeugen mit gefederter Kabine oder gefedertem Sitz.  ·  Aus = nicht aktiv."/>
+        <e k="msc_help_group_fan" v="Mischt ein Lüftergeräusch dazu, es wird mit Fahrgeschwindigkeit und Last lauter.&#10;Aus = nicht aktiv."/>
+
+        <!-- catalog names "<era>: <source vehicle>" (user 2026-10-02); translated since v0.16.0.0 (user 2026-10-11:
+             era, kind and hints like (Load) / Truck; brand and model names stay) -->
+        <!-- engine swap button texts that need a translation (otherwise the shortName of sounds/layers.xml) -->
+        <e k="msc_swap_engineMasseyFerguson8570" v="MF 8570 Drescher"/>
+        <e k="msc_swap_engineMackSuperliner" v="Mack (LKW)"/>
+        <e k="msc_swap_engineInternationalTranstar" v="Transtar II (LKW)"/>
+
+        <e k="msc_layer_engineJohnDeere3650" v="Klassisch: JD 3650"/>
+        <e k="msc_layer_engineFiat90" v="Klassisch: Fiat 90"/>
+        <e k="msc_layer_engineZetorCrystal16045" v="Klassisch: Zetor Crystal 160"/>
+        <e k="msc_layer_engineDeutzAgroStar" v="Klassisch: Deutz AgroStar"/>
+        <e k="msc_layer_engineMasseyFerguson8570" v="Klassisch: MF 8570 Mähdrescher"/>
+        <e k="msc_layer_engineMackSuperliner" v="Klassisch: Mack Superliner LKW"/>
+        <e k="msc_layer_engineInternationalTranstar" v="Klassisch: Transtar II LKW"/>
+        <e k="msc_layer_engineFendtVario1000" v="Modern: Fendt Vario 1000"/>
+        <e k="msc_layer_engineFendtVario700" v="Modern: Fendt Vario 700"/>
+        <e k="msc_layer_engineDeutzSeries7" v="Modern: Deutz-Fahr Series 7"/>
+        <e k="msc_layer_engineValtraT" v="Modern: Valtra T"/>
+        <e k="msc_layer_engineFendtVario200" v="Modern: Fendt Vario 200"/>
+        <e k="msc_layer_engineKubotaM8" v="Modern: Kubota M8"/>
+        <e k="msc_layer_engineJohnDeere6R" v="Modern: JD 6R"/>
+        <e k="msc_layer_engineJohnDeere7R" v="Modern: JD 7R"/>
+        <e k="msc_layer_engineClaasArion400" v="Modern: CLAAS Arion"/>
+        <!-- engines added for the engine swap tab (v0.16.0.0) -->
+        <e k="msc_layer_engineAntonioCarraroMach4R" v="Modern: Carraro Mach 4R"/>
+        <e k="msc_layer_engineCaseFarmall120C" v="Modern: Case IH Farmall 120C"/>
+        <e k="msc_layer_engineCaseMagnum" v="Modern: Case IH Magnum"/>
+        <e k="msc_layer_engineCasePuma" v="Modern: Case IH Puma"/>
+        <e k="msc_layer_engineCaseQuadtrac" v="Modern: Case IH Quadtrac"/>
+        <e k="msc_layer_engineCaseVestrum" v="Modern: Case IH Vestrum"/>
+        <e k="msc_layer_engineChallengerMT655" v="Modern: Challenger MT655"/>
+        <e k="msc_layer_engineClaasXerion" v="Modern: CLAAS Xerion Motor"/>
+        <e k="msc_layer_engineDeutzSeries6C" v="Modern: Deutz-Fahr Series 6C"/>
+        <e k="msc_layer_engineDeutzSeries8" v="Modern: Deutz-Fahr Series 8"/>
+        <e k="msc_layer_engineFendtMT1100" v="Modern: Fendt MT 1100"/>
+        <e k="msc_layer_engineFendtVario300" v="Modern: Fendt Vario 300"/>
+        <e k="msc_layer_engineFendtVario900" v="Modern: Fendt Vario 900"/>
+        <e k="msc_layer_engineIsekiTJW" v="Modern: Iseki TJW"/>
+        <e k="msc_layer_engineJohnDeere6M" v="Modern: JD 6M"/>
+        <e k="msc_layer_engineJohnDeere8R" v="Modern: JD 8R"/>
+        <e k="msc_layer_engineJohnDeere9R" v="Modern: JD 9R"/>
+        <e k="msc_layer_engineJohnDeere9RX830" v="Modern: JD 9RX 830"/>
+        <e k="msc_layer_engineLandiniREX4" v="Modern: Landini REX4"/>
+        <e k="msc_layer_engineLindnerLintrac" v="Modern: Lindner Lintrac"/>
+        <e k="msc_layer_engineMasseyFerguson5700S" v="Modern: MF 5700 S"/>
+        <e k="msc_layer_engineMasseyFerguson7S" v="Modern: MF 7S"/>
+        <e k="msc_layer_engineMasseyFerguson9S" v="Modern: MF 9S"/>
+        <e k="msc_layer_engineMcCormickX8" v="Modern: McCormick X8"/>
+        <e k="msc_layer_engineNewHollandT8" v="Modern: NH T8"/>
+        <e k="msc_layer_engineNewHollandTK4" v="Modern: NH TK4"/>
+        <e k="msc_layer_engineRigitracSKH60" v="Modern: Rigitrac SKH 60"/>
+        <e k="msc_layer_engineValtraS" v="Modern: Valtra S"/>
+        <e k="msc_layer_engineZetorCrystal" v="Modern: Zetor Crystal"/>
+        <e k="msc_layer_engineZetorForterra" v="Modern: Zetor Forterra"/>
+        <e k="msc_layer_engineZetorProxima" v="Modern: Zetor Proxima"/>
+        <e k="msc_layer_ownEngineOctave" v="Eigener: Oktave tiefer"/>
+        <e k="msc_layer_ownEngineFifth" v="Eigener: Quinte tiefer"/>
+        <e k="msc_layer_ownEngineLoad" v="Eigener: unter Last"/>
+        <e k="msc_layer_exhaustXerion" v="Modern: CLAAS Xerion"/>
+        <e k="msc_layer_exhaustXerionLoad" v="Modern: CLAAS Xerion (Last)"/>
+        <e k="msc_layer_exhaustMasseyBeta" v="Modern: MF Beta Mähdrescher"/>
+        <e k="msc_layer_exhaustMasseyBetaLoad" v="Modern: MF Beta Mähdrescher (Last)"/>
+        <e k="msc_layer_exhaustPmTrac" v="Modern: Pfanzelt Pm Trac"/>
+        <e k="msc_layer_exhaustPmTracLoad" v="Modern: Pfanzelt Pm Trac (Last)"/>
+        <e k="msc_layer_loadLoop" v="Allgemein: Last-Loop"/>
+        <e k="msc_layer_loadJohnDeere9RXLow" v="Modern: JD 9RX (geringe Last)"/>
+        <e k="msc_layer_loadJohnDeere9RXHigh" v="Modern: JD 9RX (hohe Last)"/>
+        <e k="msc_layer_toneJohnDeere9RX" v="Modern: JD 9RX (Ton)"/>
+        <e k="msc_layer_externalMasseyBeta" v="Modern: MF Beta Mähdrescher (außen)"/>
+        <e k="msc_layer_loadMackSuperliner" v="Klassisch: Mack Superliner (Last)"/>
+        <e k="msc_layer_loadFiat90" v="Klassisch: Fiat 90 (Last)"/>
+        <e k="msc_layer_loadDeutzAgroStar" v="Klassisch: Deutz AgroStar (Last)"/>
+        <e k="msc_layer_loadJohnDeere3650" v="Klassisch: JD 3650 (Last)"/>
+        <e k="msc_layer_transmissionTruckLoop" v="Klassisch: LKW-Getriebe"/>
+        <e k="msc_layer_transmissionSteyrLoop" v="Klassisch: Steyr-Getriebe"/>
+        <e k="msc_layer_transmissionJohnDeereLoop" v="Klassisch: JD-Getriebe"/>
+        <e k="msc_layer_transmissionVintage" v="Klassisch: Oldtimer-Getriebe"/>
+        <e k="msc_layer_transmissionTruck01" v="Allgemein: LKW-Getriebe"/>
+        <e k="msc_layer_transmissionModern03" v="Modern: Maschinen-Getriebe"/>
+        <e k="msc_layer_transmissionModern08" v="Modern: CLAAS-Xerion-Getriebe"/>
+        <e k="msc_layer_rattleAttacherClanks" v="Allgemein: Anbauteile-Klappern"/>
+        <e k="msc_layer_rumbleCabin" v="Allgemein: Kabinen-Rumpeln"/>
+        <e k="msc_layer_rumbleCabinOld" v="Klassisch: Kabinen-Rumpeln"/>
+        <e k="msc_layer_rumbleJohnDeere9RX" v="Modern: John Deere 9RX"/>
+        <e k="msc_layer_fanOldAgroStar" v="Klassisch: Deutz-AgroStar-Lüfter"/>
+        <e k="msc_layer_fanModernBigT8" v="Modern: New-Holland-T8-Lüfter"/>
+        <e k="msc_layer_fanModern" v="Allgemein: Moderner Lüfter"/>
+        <e k="msc_layer_fanTruck" v="Allgemein: Lkw-Lüfter"/>
+        <e k="msc_help_volume" v="Wie laut der Sound ist. 0 % = stumm, 100 % = Original."/>
+        <e k="msc_help_pitch" v="Höher = heller und schneller, tiefer = dunkler und langsamer.&#10;Ändert beim Motor auch den Takt. Für einen dunkleren Klang ohne Taktänderung nutze die „Klangfarbe“ im Reiter „Dämpfung“."/>
+        <e k="msc_help_rpm" v="Über 100 % klingt der Motor, als würde er höher drehen, unter 100 % wie ein langsamer drehender Motor.&#10;Wirkt mit steigender Drehzahl, der Leerlauf bleibt gleich.&#10;Bei „Nur dieses Modell“ ausgeblendet, wenn die Sounds des Fahrzeugs nicht der Motordrehzahl folgen (z. B. Elektroantrieb)."/>
+        <e k="msc_help_cutoffIndoor" v="Wie dumpf es durch die Kabinenwand klingt.&#10;Weniger = dumpfer, nur noch Brummen. Mehr = heller, mehr Details vom Motor.&#10;Zum Nachjustieren, bei 100 % Offenheit gesperrt (dann gibt es keine Wand mehr)."/>
+        <e k="msc_help_gainIndoor" v="Wie stark die Kabinenwand den Klang schluckt.&#10;Weniger = weiter weg, gedämpft. Mehr = direkter, näher dran.&#10;Zum Nachjustieren, bei 100 % Offenheit gesperrt (dann gibt es keine Wand mehr)."/>
+        <e k="msc_help_indoorDamping" v="Wie viel von der Kabinenwand übrig ist (die Lautstärke bleibt).&#10;0 % = Wand wie im Original, 100 % = keine Wand: klingt wie draußen, nur leiser.&#10;Beim Motor gilt sie auch für die Lüfter."/>
+        <e k="msc_help_cutoffOutdoor" v="Wie dumpf es draußen klingt. Weniger = dumpfer, mehr = heller.&#10;Wirkt nur, wenn die Präsenz darunter unter 100 % liegt.&#10;Die meisten Fahrzeuge klingen draußen schon ganz offen, dann ändert mehr als 100 % nichts."/>
+        <e k="msc_help_outdoor_unfiltered" v="Dieses Fahrzeug: %s klingt draußen ganz offen, mehr als 100 %% ändert nichts."/>
+        <e k="msc_help_outdoor_filtered" v="Dieses Fahrzeug: %s ist draußen gedämpft, mehr als 100 %% macht es offener."/>
+        <e k="msc_help_gainOutdoor" v="Wie stark der Klang draußen geschluckt wird. Weniger = weiter weg, gedämpft.&#10;Die meisten Fahrzeuge klingen draußen schon ganz offen, dann ändert mehr als 100 % nichts."/>
+
+        <e k="msc_reset" v="Zurücksetzen"/>
+        <e k="msc_resetAll" v="Modell zurücksetzen"/>
+        <e k="msc_resetAll_question" v="Alle Einstellungen für „%s“ zurücksetzen?&#10;Die eigenen Werte dieses Modells (Motor, Getriebe, Kabine &amp; Lüfter, Anbauteile-Klappern, Arbeitswerk, Auswurf &amp; Befüllen) werden gelöscht und alle Zusatz-Sounds ausgeschaltet.&#10;Die Werte für „Alle Fahrzeuge“ bleiben."/>
+        <e k="msc_apply_question" v="Änderungen übernehmen?&#10;Ja = speichern.&#10;Nein = alles, was du seit dem Öffnen des Menüs geändert hast, wird rückgängig gemacht."/>
+        <e k="msc_cancel" v="Abbrechen"/>
+        <e k="msc_apply" v="Übernehmen"/>
+    </elements>
+</l10n>
