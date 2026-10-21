@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
-<modDesc descVersion="114">
+<modDesc descVersion="115">
     <author>Emme92</author>
-    <version>1.0.0.0</version>
+    <version>1.1.0.0</version>
     <title>
         <en>Motor Sound Configurator</en>
     </title>
@@ -11,11 +11,11 @@
 Description:
 Adjust the engine and transmission sound of your vehicles in game, without editing XML files. All changes are audible immediately.
 - Presets: ready-made settings for the vehicle model (punchier, more bass, insulated cabin ...), combinable
-- Engine swap: replace the engine sound of a vehicle model completely with the engine of another base game vehicle (tractors, trucks, a combine)
+- Engine swap: replace the engine sound of a vehicle model completely with the engine of another vehicle: calibrated base game engines (tractors, trucks, a combine), tractors from your mods and DLCs, and all other vehicles (base game, mods, DLCs). Nothing is copied: if a mod is removed, its engine is gone and the own engine plays again
 - Engine & gearbox: volume, pitch & speed, RPM character
 - Other sounds: volume of cabin sound and fan, rattling parts and work sounds of harvesters (work unit, discharge & filling); attached implements (work, drive) and trailers (driving rattle) per model, e.g. header, mower, seeder
 - Filter: how open the cabin sounds (up to "like outside"), tone and presence in the cabin and outside, with an overview of how muffled the vehicle is
-- Extra sounds: mix in exhausts, engines or transmissions of other base game vehicles, plus rattling, cabin rumble and fan
+- Extra sounds: mix in exhausts, engines or transmissions of other base game vehicles, engines from mods and DLCs, plus rattling, cabin rumble and fan
 - Preview: hear your setting at any RPM and load while standing still, compare with the original
 - Settings for all vehicles or for a single vehicle model, relative to the original sound (100 % = original)
 - Saved per savegame
@@ -26,7 +26,13 @@ Hotkeys:
 - Open (in a motorized vehicle): Alt + M; controller: assign a button in Options > Controls ("Adjust engine sound")
 - In the configurator, keyboard / mouse: Apply = Enter; Cancel = Esc; Reset (tab) = Space; Reset model = X key; switch tab = Q / E; select = mouse
 - In the configurator, controller: Apply = press right stick; Cancel = B; Reset (tab) = X button; Reset model = press left stick; switch tab = LB / RB; select = A
+- Engine swap tab, next / previous page of a long list: Page down / Page up; controller: RT / LT
 - All keys can be changed in Options > Controls ("Adjust engine sound")
+
+Changelog 1.1.0.0:
+- Engine swap and extra sounds: engines from your mods and DLCs and of all other base game vehicles (lists "Mods & DLCs" and "Other vehicles" with pages, row "Engine (more)"); if a mod is removed, its engine is kept in the settings and the own engine plays meanwhile
+- Preview also controls engine sounds that follow the relative RPM (e.g. engine loops of mods)
+- Filter overview: a high cutoff no longer counts as muffled
 
 GitHub (source code): https://github.com/emme92/FS25_MotorSoundConfigurator
 
@@ -36,11 +42,11 @@ License: GNU General Public License v3 (https://www.gnu.org/licenses/gpl-3.0.htm
 Beschreibung:
 Stelle den Motor- und Getriebesound deiner Fahrzeuge direkt im Spiel ein, ohne XML-Dateien zu bearbeiten. Jede Änderung ist sofort zu hören.
 - Presets: fertige Einstellungen für das Fahrzeug-Modell (kerniger, mehr Bass, gedämmte Kabine ...), kombinierbar
-- Motor-Tausch: den Motor-Sound eines Fahrzeug-Modells ganz durch den Motor eines anderen Basisspiel-Fahrzeugs ersetzen (Traktoren, Lkw, ein Mähdrescher)
+- Motor-Tausch: den Motor-Sound eines Fahrzeug-Modells ganz durch den Motor eines anderen Fahrzeugs ersetzen: eingepegelte Basisspiel-Motoren (Traktoren, Lkw, ein Mähdrescher), Traktoren aus deinen Mods und DLCs und alle anderen Fahrzeuge (Basisspiel, Mods, DLCs). Es wird nichts kopiert: Entfernst du einen Mod, ist sein Motor weg und der eigene läuft wieder
 - Motor & Getriebe: Lautstärke, Tonhöhe & Tempo, Drehzahl-Charakter
 - Geräusche: Lautstärke von Kabinengeräusch und Lüfter, klappernden Anbauteilen und Arbeitsgeräuschen von Erntemaschinen (Arbeitswerk, Auswurf & Befüllen); angehängte Anbaugeräte (Arbeit, Antrieb) und Anhänger (Fahr-Klappern) pro Modell, z. B. Schneidwerk, Mähwerk, Sämaschine
 - Dämpfung: wie offen die Kabine klingt (bis „wie draußen“), Klangfarbe und Präsenz in der Kabine und draußen, mit Übersicht, wie gedämpft das Fahrzeug ist
-- Zusatz-Sounds: Auspuff, Motoren oder Getriebe anderer Basisspiel-Fahrzeuge dazumischen, dazu Klappern, Kabinen-Rumpeln und Lüfter
+- Zusatz-Sounds: Auspuff, Motoren oder Getriebe anderer Basisspiel-Fahrzeuge dazumischen, Motoren aus Mods und DLCs, dazu Klappern, Kabinen-Rumpeln und Lüfter
 - Vorschau: deine Einstellung im Stand bei jeder Drehzahl und Last anhören, mit dem Original vergleichen
 - Einstellungen für alle Fahrzeuge oder für ein einzelnes Fahrzeug-Modell, relativ zum Original-Sound (100 % = Original)
 - Gespeichert pro Spielstand
@@ -51,7 +57,13 @@ Tastenbelegung:
 - Öffnen (in einem motorisierten Fahrzeug): Alt + M; Controller: unter Optionen > Steuerung eine Taste belegen („Motorsound einstellen“)
 - Im Configurator, Tastatur / Maus: Übernehmen = Enter; Abbrechen = Esc; Zurücksetzen (Reiter) = Leertaste; Modell zurücksetzen = Taste X; Reiter wechseln = Q / E; auswählen = Maus
 - Im Configurator, Controller: Übernehmen = rechten Stick drücken; Abbrechen = B; Zurücksetzen (Reiter) = Knopf X; Modell zurücksetzen = linken Stick drücken; Reiter wechseln = LB / RB; auswählen = A
+- Reiter Motor-Tausch, nächste / vorherige Seite einer langen Liste: Bild ab / Bild auf; Controller: RT / LT
 - Alle Tasten lassen sich unter Optionen > Steuerung ändern („Motorsound einstellen“)
+
+Changelog 1.1.0.0:
+- Motor-Tausch und Zusatz-Sounds: Motoren aus deinen Mods und DLCs und aller anderen Basisspiel-Fahrzeuge (Listen „Mods & DLCs“ und „Andere Fahrzeuge“ mit Seiten, Zeile „Motor (weitere)“); entfernst du einen Mod, bleibt sein Motor in den Einstellungen und solange läuft der eigene Motor
+- Die Vorschau steuert auch Motor-Sounds, die der relativen Drehzahl folgen (z. B. Motor-Loops von Mods)
+- Dämpfungs-Übersicht: eine hohe Grenzfrequenz zählt nicht mehr als gedämpft
 
 GitHub (Quellcode): https://github.com/emme92/FS25_MotorSoundConfigurator
 
@@ -67,6 +79,7 @@ Lizenz: GNU General Public License v3 (https://www.gnu.org/licenses/gpl-3.0.html
         <sourceFile filename="src/Settings.lua"/>
         <sourceFile filename="src/SampleAdjuster.lua"/>
         <sourceFile filename="src/Layers.lua"/>
+        <sourceFile filename="src/ModEngines.lua"/>
         <sourceFile filename="src/Presets.lua"/>
         <sourceFile filename="src/EngineSwap.lua"/>
         <sourceFile filename="src/Hooks.lua"/>

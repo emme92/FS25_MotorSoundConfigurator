@@ -121,6 +121,7 @@ the sound (or **Off**), on the right its volume (10–300 %). One sound per kind
 | Kind | Content |
 |---|---|
 | **Engine** | Engines of other vehicles, the older (rougher, punchier) ones come first |
+| **Engine (more)** | Engines from your mods and DLCs and of all other base game vehicles (see "Engine swap"), sorted by name; only shown if there are any |
 | **Own Engine** | The vehicle's own engine a second time: an octave or fifth lower or under load only |
 | **Exhaust** | Exhaust sounds, each steady or "(Load)" (loud when the engine works) |
 | **Load & Tone** | Sounds that mainly become audible under load, also old engines that only set in under load |
@@ -168,14 +169,30 @@ Ready-made settings to click, the easiest way to start. Presets **always apply t
 
 ### Tab "Engine swap"
 
-Replaces the engine sound of the model **completely** with the engine of another vehicle: all tractor engines of the
-base game (vehicles with the same engine only once), plus the MF 8570 combine and two trucks, sorted alphabetically.
+Replaces the engine sound of the model **completely** with the engine of another vehicle. At the top right you choose
+the list:
+
+| List | Content |
+|---|---|
+| **Base game** | All tractor engines of the base game (vehicles with the same engine only once), plus the MF 8570 combine and two trucks, calibrated and sorted alphabetically |
+| **Mods & DLCs** | The tractors from your mods and unlocked DLCs |
+| **Other vehicles** | All other vehicles with an engine: from mods and DLCs and the base game vehicles not in "Base game" (trucks, harvesters, loaders, cars, trains, snow groomer ...) |
+
+- The lists "Mods & DLCs" and "Other vehicles" are built automatically when the savegame loads, sorted by name,
+  vehicles with the same engine only once. A list without engines is greyed out. With more than 49 engines you turn
+  the pages with **<** / **>** at the bottom right (controller: LT / RT, keyboard: Page up / Page down).
+- The button shows the shop name, the help line the full name and the mod / DLC the engine comes from. At 100 % these
+  engines are about as loud as the vehicle's own engine (one common level, not calibrated per engine), the **Swap
+  engine** slider helps if needed.
+- Nothing is copied: the sound comes straight from the mod. **If you remove the mod**, its engine is gone: the own
+  engine plays at normal volume again, the setting stays saved and works again as soon as the mod is back. At the
+  bottom of the tab "Mod missing: ..." is shown with **Remove** to delete it.
 
 - A click on an engine swaps it in: the own engine goes to **0 %** (on "Engine & gearbox", *Engine → Volume* then shows 0 %), the
   other engine plays at 100 %. **Green** = active engine, only one can be active.
 - An extra sound of the kind **Own Engine** (e.g. from the preset *More bass*) is switched off by the swap, otherwise
   the own engine would stay audible.
-- If you switch the swapped-in engine off on the "Extra sounds" tab (row *Engine* to **Off** or **Reset**), the swap
+- If you switch the swapped-in engine off on the "Extra sounds" tab (row *Engine* or *Engine (more)* to **Off** or **Reset**), the swap
   ends as well and the own engine comes back.
 - Electric drives (e.g. Volvo FH Electric) count as engine: their whine can be adjusted on "Engine & gearbox" / "Filter" (except
   *RPM character*: the whine follows the driving speed, not the RPM, the slider is hidden in "This model only") and

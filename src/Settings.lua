@@ -168,13 +168,42 @@ function MotorSoundConfigurator.loadSettings()
                             model[category] = values
                         end
                     end
+                    -- engines from mods / DLCs moved to a base game catalog engine (modEngineAliases), added after the
+                    -- other layers: only if the model has no layer of that group yet (one sound per group, review
+                    -- 2026-10-20), otherwise dropped on the next save
+                    local catalogAliases = {}
                     -- <layer name="..." volume="1.0"/>: attached extra sounds of this model
                     xmlFile:iterate(vehicleKey .. ".layer", function(_, layerKey)
                         local layerName = xmlFile:getString(layerKey .. "#name")
+                        -- engine from a mod / DLC (v1.1.0.0): <layer donor="<key of the donor vehicle>"/>
+                        local donorKey = xmlFile:getString(layerKey .. "#donor")
+                        if donorKey ~= nil and donorKey ~= "" then
+                            layerName = MotorSoundConfigurator.getModEngineLayerName(donorKey)
+                            -- identical engine of another vehicle kept instead (e.g. a DLC vehicle using a base game
+                            -- sound) or the same engine in the base game catalog: the setting moves to it, saved under
+                            -- its name on the next save
+                            layerName = MotorSoundConfigurator.modEngineAliases[layerName] or layerName
+                            if not MotorSoundConfigurator.isModEngineName(layerName) then
+                                table.insert(catalogAliases, { name = layerName, donorKey = donorKey,
+                                    volume = math.clamp(xmlFile:getFloat(layerKey .. "#volume", 1.0), MotorSoundConfigurator.LAYER_VOLUME_MIN, MotorSoundConfigurator.LAYER_VOLUME_MAX) })
+                                -- handled after the loop (no early return: iterate may treat a return value as "stop")
+                                layerName = nil
+                            end
+                        end
+                        -- donor missing (mod removed or not active): kept, so it works again when the mod is back; no sound
+                        -- meanwhile (syncVehicleLayers), the own engine is not muted by a swap (applyToVehicleData)
+                        if MotorSoundConfigurator.isModEngineMissing(layerName) then
+                            MotorSoundConfigurator.warnMissingModEngine(layerName, modelKey)
+                        end
                         -- layers removed from the catalog (e.g. the turbo group in v0.12.0.0 and again in v0.18.1.0) are dropped, the dialog
                         -- has no row to switch them off; the file is cleaned on the next save
-                        if layerName ~= nil and layerName ~= "" and MotorSoundConfigurator.getCatalogLayer(layerName) == nil then
+                        if layerName ~= nil and layerName ~= "" and MotorSoundConfigurator.getCatalogLayer(layerName) == nil
+                            and not MotorSoundConfigurator.isModEngineName(layerName) then
                             MotorSoundConfigurator.logWarning("layer '%s' is not in the catalog any more, removed from %s", layerName, modelKey)
+                        elseif layerName ~= nil and layerName ~= "" and model.layers ~= nil and model.layers[layerName] ~= nil then
+                            -- two saved engines resolved to the same one (modEngineAliases): the first entry is kept
+                            MotorSoundConfigurator.logWarning("layer '%s' is set twice for %s (identical engines), the first entry is kept",
+                                layerName, modelKey)
                         elseif layerName ~= nil and layerName ~= "" then
                             model.layers = model.layers or {}
                             model.layers[layerName] = {
@@ -182,6 +211,24 @@ function MotorSoundConfigurator.loadSettings()
                             }
                         end
                     end)
+                    for _, alias in ipairs(catalogAliases) do
+                        local groupName = MotorSoundConfigurator.getLayerGroupName(alias.name)
+                        local takenBy = nil
+                        for existingName, _ in pairs(model.layers or {}) do
+                            if MotorSoundConfigurator.getLayerGroupName(existingName) == groupName then
+                                takenBy = existingName
+                            end
+                        end
+                        if groupName == nil then
+                            MotorSoundConfigurator.logWarning("layer '%s' is not in the catalog any more, removed from %s", alias.name, modelKey)
+                        elseif takenBy ~= nil then
+                            MotorSoundConfigurator.logWarning("engine of %s is the base game engine '%s', but %s already uses '%s' in that group: removed",
+                                alias.donorKey, alias.name, modelKey, takenBy)
+                        else
+                            model.layers = model.layers or {}
+                            model.layers[alias.name] = { volume = alias.volume }
+                        end
+                    end
                     settings.models[modelKey] = model
                 end
             end)
@@ -293,7 +340,11 @@ function MotorSoundConfigurator.saveSettings(settings, path)
             table.sort(layerNames)
             for layerIndex, layerName in ipairs(layerNames) do
                 local layerKey = string.format("%s.layer(%d)", vehicleKey, layerIndex - 1)
-                xmlFile:setString(layerKey .. "#name", layerName)
+                if MotorSoundConfigurator.isModEngineName(layerName) then
+                    xmlFile:setString(layerKey .. "#donor", MotorSoundConfigurator.getModEngineDonorKey(layerName))
+                else
+                    xmlFile:setString(layerKey .. "#name", layerName)
+                end
                 xmlFile:setFloat(layerKey .. "#volume", model.layers[layerName].volume)
             end
         end
@@ -448,25 +499,35 @@ function MotorSoundConfigurator.setModelLayer(vehicleData, layerName, volume, sk
 end
 
 
--- switches off all layers of a catalog group for the model, except keepLayerName (may be nil); synced once at the
--- end unless skipSync (review #38)
+-- catalog group of a layer name; mod engines whose donor is missing still belong to MOD_ENGINE_GROUP; nil if unknown
+function MotorSoundConfigurator.getLayerGroupName(layerName)
+    local layer = MotorSoundConfigurator.getCatalogLayer(layerName)
+    if layer ~= nil then
+        return layer.group
+    elseif MotorSoundConfigurator.isModEngineName(layerName) then
+        return MotorSoundConfigurator.MOD_ENGINE_GROUP
+    end
+    return nil
+end
+
+
+-- switches off all layers of a catalog group for the model (also mod engines whose donor is missing), except
+-- keepLayerName (may be nil); synced once at the end unless skipSync (review #38)
 function MotorSoundConfigurator.clearLayerGroup(vehicleData, groupName, keepLayerName, skipSync)
     local modelLayers = MotorSoundConfigurator.getModelLayers(vehicleData.modelKey)
     if modelLayers == nil then
         return
     end
-    local isChanged = false
-    for _, group in ipairs(MotorSoundConfigurator.getLayerGroups()) do
-        if group.name == groupName then
-            for _, layer in ipairs(group.layers) do
-                -- read again: removing the last layer of the model removes its layer table (removeEmptyOverrides)
-                local layers = MotorSoundConfigurator.getModelLayers(vehicleData.modelKey)
-                if layer.name ~= keepLayerName and layers ~= nil and layers[layer.name] ~= nil then
-                    MotorSoundConfigurator.setModelLayer(vehicleData, layer.name, nil, true)
-                    isChanged = true
-                end
-            end
+    -- names first: setModelLayer changes the table (and removes it with the last layer, removeEmptyOverrides)
+    local names = {}
+    for layerName, _ in pairs(modelLayers) do
+        if layerName ~= keepLayerName and MotorSoundConfigurator.getLayerGroupName(layerName) == groupName then
+            table.insert(names, layerName)
         end
+    end
+    local isChanged = #names > 0
+    for _, layerName in ipairs(names) do
+        MotorSoundConfigurator.setModelLayer(vehicleData, layerName, nil, true)
     end
     if isChanged and not skipSync then
         MotorSoundConfigurator.syncLayers(vehicleData.modelKey)

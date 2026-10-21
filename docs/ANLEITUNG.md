@@ -125,6 +125,7 @@ Sound (oder **Aus**), rechts die Lautstärke (10–300 %). Pro Art läuft ein So
 | Art | Inhalt |
 |---|---|
 | **Motor** | Motoren anderer Fahrzeuge, die älteren (raueren, kernigeren) stehen vorne |
+| **Motor (weitere)** | Motoren aus deinen Mods und DLCs und aller übrigen Basisspiel-Fahrzeuge (siehe „Motor-Tausch“), nach Namen sortiert; nur da, wenn es solche gibt |
 | **Eigener Motor** | Der eigene Motor ein zweites Mal: eine Oktave oder Quinte tiefer oder nur unter Last |
 | **Auspuff** | Auspuffgeräusche, jeweils gleichmäßig oder „(Last)“ (laut, wenn der Motor arbeitet) |
 | **Last & Ton** | Sounds, die vor allem bei Last hörbar werden, auch alte Motoren, die erst unter Last einsetzen |
@@ -173,14 +174,29 @@ Fertige Einstellungen zum Anklicken, der einfachste Einstieg. Presets gelten **i
 
 ### Reiter „Motor-Tausch“
 
-Ersetzt den Motor-Sound des Modells **ganz** durch den Motor eines anderen Fahrzeugs: alle Traktormotoren des
-Basisspiels (Fahrzeuge mit gleichem Motor nur einmal), dazu der MF-8570-Mähdrescher und zwei LKW, alphabetisch sortiert.
+Ersetzt den Motor-Sound des Modells **ganz** durch den Motor eines anderen Fahrzeugs. Oben rechts wählst du die Liste:
+
+| Liste | Inhalt |
+|---|---|
+| **Basisspiel** | Alle Traktormotoren des Basisspiels (Fahrzeuge mit gleichem Motor nur einmal), dazu der MF-8570-Mähdrescher und zwei LKW, eingepegelt und alphabetisch sortiert |
+| **Mods & DLCs** | Die Traktoren aus deinen Mods und freigeschalteten DLCs |
+| **Andere Fahrzeuge** | Alle übrigen Fahrzeuge mit Motor: aus Mods und DLCs und die Basisspiel-Fahrzeuge, die nicht in „Basisspiel“ stehen (LKW, Erntemaschinen, Lader, Autos, Züge, Pistenraupe …) |
+
+- Die Listen „Mods & DLCs“ und „Andere Fahrzeuge“ werden beim Laden des Spielstands automatisch erstellt, nach Namen
+  sortiert, Fahrzeuge mit gleichem Motor nur einmal. Eine Liste ohne Motoren ist ausgegraut. Bei mehr als 49 Motoren
+  blätterst du mit **<** / **>** unten rechts (Controller: LT / RT, Tastatur: Bild auf / Bild ab).
+- Der Knopf zeigt den Shop-Namen, die Hilfezeile den vollen Namen und den Mod / das DLC, aus dem der Motor stammt.
+  Bei 100 % klingen diese Motoren etwa so laut wie der eigene Motor (ein gemeinsamer Pegel, nicht je Motor
+  eingepegelt), bei Bedarf hilft der Regler **Tausch-Motor**.
+- Es wird nichts kopiert: der Sound kommt direkt aus dem Mod. **Entfernst du den Mod**, ist sein Motor weg: der eigene
+  Motor läuft wieder normal laut, die Einstellung bleibt gespeichert und greift wieder, sobald der Mod zurück ist. Unten
+  im Reiter steht dann „Mod fehlt: …“ mit **Entfernen**, um sie zu löschen.
 
 - Ein Klick auf einen Motor tauscht ihn ein: der eigene Motor geht auf **0 %** (in „Motor & Getriebe“ steht *Motor → Lautstärke*
   dann auf 0 %), der andere Motor läuft mit 100 %. **Grün** = aktiver Motor, es ist immer nur einer aktiv.
 - Ein Zusatz-Sound der Art **Eigener Motor** (z. B. vom Preset *Mehr Bass*) wird beim Tausch ausgeschaltet, sonst wäre
   der eigene Motor weiter zu hören.
-- Schaltest du den eingetauschten Motor im Reiter „Zusatz-Sounds“ aus (Zeile *Motor* auf **Aus** oder
+- Schaltest du den eingetauschten Motor im Reiter „Zusatz-Sounds“ aus (Zeile *Motor* bzw. *Motor (weitere)* auf **Aus** oder
   **Zurücksetzen**), endet der Tausch ebenfalls und der eigene Motor kommt zurück.
 - Elektroantriebe (z. B. Volvo FH Electric) zählen als Motor: ihr Surren lässt sich in „Motor & Getriebe“ / „Dämpfung“ einstellen
   (außer *Drehzahl-Charakter*: das Surren folgt der Fahrgeschwindigkeit, nicht der Drehzahl, der Regler ist bei „Nur dieses Modell“ ausgeblendet)

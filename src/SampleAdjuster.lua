@@ -364,8 +364,17 @@ end
 function MotorSoundConfigurator.applyToVehicleData(data)
     local isOriginal = MotorSoundConfigurator.isOriginalMode
     local neutral = isOriginal and MotorSoundConfigurator.getNeutralFactors() or nil
+    -- swap to a mod engine whose donor is missing (v1.1.0.0): the own engine plays at its global volume instead of the
+    -- 0 % of the swap, the setting itself stays (implements have no swap)
+    local ownEngineVolume = nil
+    if neutral == nil and not data.isImplement and MotorSoundConfigurator.isSwapDonorMissing(data.modelKey) then
+        ownEngineVolume = MotorSoundConfigurator.getSettings().global[MotorSoundConfigurator.CATEGORY_MOTOR].volume
+    end
     for _, entry in ipairs(data.entries) do
         local factors = neutral or MotorSoundConfigurator.getFactors(data.modelKey, entry.category)
+        if ownEngineVolume ~= nil and entry.category == MotorSoundConfigurator.CATEGORY_MOTOR and not entry.isLayer then
+            factors.volume = ownEngineVolume
+        end
         if entry.isFan and neutral == nil then
             -- getFactors builds a new table, changing it here is safe
             factors.indoorDamping = MotorSoundConfigurator.getFactors(data.modelKey, MotorSoundConfigurator.CATEGORY_MOTOR).indoorDamping
@@ -496,15 +505,17 @@ end
 
 
 -- muffling in words for the info panel of the "Filter" page (v0.20.0.0, user 2026-10-19): openness 0 .. 1 of a lowpass
--- = brightness (cutoff on a log scale, 200 Hz = 0, from 8000 Hz = 1: above that the cutoff is hardly audible) x gain,
--- then one of MUFFLE_LEVELS (first with openness >= min). Engine templates: cabin 250 Hz / 0.3 = 0.02 (strong),
--- outside 20000 Hz / 1.0 = 1 (open); an approximation, the resonance is left out
+-- = gain + (1 - gain) x brightness (cutoff on a log scale, 200 Hz = 0, from 8000 Hz = 1: above that the cutoff is
+-- hardly audible), then one of MUFFLE_LEVELS (first with openness >= min). The gain only lowers what lies above the
+-- cutoff (v1.1.0.0, user 2026-10-20: JD 6R outside 12000 Hz / 0.5 showed "muffled", 20000 Hz / 1.0 sounded the same),
+-- so a high cutoff counts as open whatever the gain. Engine templates: cabin 250 Hz / 0.3 .. 0.35 = 0.34 .. 0.39
+-- (strong), outside 20000 Hz / 1.0 = 1 (open); an approximation, the resonance is left out
 MotorSoundConfigurator.MUFFLE_CUTOFF_LOW = 200
 MotorSoundConfigurator.MUFFLE_CUTOFF_HIGH = 8000
 MotorSoundConfigurator.MUFFLE_LEVELS = {
-    { name = "open", min = 0.85 },
-    { name = "light", min = 0.55 },
-    { name = "medium", min = 0.25 },
+    { name = "open", min = 0.9 },
+    { name = "light", min = 0.65 },
+    { name = "medium", min = 0.45 },
     { name = "strong", min = -1 }
 }
 
@@ -516,7 +527,8 @@ function MotorSoundConfigurator.getFilterOpenness(cutoff, gain)
     local low = math.log(MotorSoundConfigurator.MUFFLE_CUTOFF_LOW)
     local high = math.log(MotorSoundConfigurator.MUFFLE_CUTOFF_HIGH)
     local brightness = math.clamp((math.log(cutoff) - low) / (high - low), 0, 1)
-    return brightness * math.clamp(gain or 1.0, 0, 1)
+    local clampedGain = math.clamp(gain or 1.0, 0, 1)
+    return clampedGain + (1 - clampedGain) * brightness
 end
 
 
@@ -556,20 +568,27 @@ end
 
 
 -- outside lowpass of the vehicle's own samples of a category (dialog help line of "Outside: tone / presence"):
--- nil without such samples, otherwise isFiltered and the strongest filtering (lowest gain, its cutoff in Hz).
--- Only a gain below 1.0 muffles audibly (the cutoff alone had no effect in the tests), the engine templates use
+-- nil without such samples, otherwise isFiltered and the strongest filtering (lowest openness, its gain and cutoff in
+-- Hz). Only a gain below 1.0 together with a cutoff in the audible range muffles (the cutoff alone had no effect in the
+-- tests, a gain below 1.0 above 8000 Hz neither: JD 6R 12000 Hz / 0.5, v1.1.0.0), the engine templates use
 -- 20000 Hz / 1.0 outside, so for most vehicles factors above 1.0 are clamped to the same values (user 2026-10-02)
 function MotorSoundConfigurator.getOutdoorFilter(data, category)
+    local minOpenness = nil
     local minGain = nil
     local cutoff = nil
     for _, entry in ipairs(data.entries) do
-        if not entry.isLayer and entry.category == category and (minGain == nil or entry.gainOutdoor < minGain) then
-            minGain = entry.gainOutdoor
-            cutoff = entry.cutoffOutdoor > 0 and entry.cutoffOutdoor or MotorSoundConfigurator.DEFAULT_CUTOFF_FREQUENCY
+        if not entry.isLayer and entry.category == category then
+            local entryCutoff = entry.cutoffOutdoor > 0 and entry.cutoffOutdoor or MotorSoundConfigurator.DEFAULT_CUTOFF_FREQUENCY
+            local openness = MotorSoundConfigurator.getFilterOpenness(entryCutoff, entry.gainOutdoor)
+            if minOpenness == nil or openness < minOpenness then
+                minOpenness = openness
+                minGain = entry.gainOutdoor
+                cutoff = entryCutoff
+            end
         end
     end
-    if minGain == nil then
+    if minOpenness == nil then
         return nil
     end
-    return minGain < MotorSoundConfigurator.LOWPASS_GAIN_MAX - 0.001, minGain, cutoff
+    return minOpenness < MotorSoundConfigurator.MUFFLE_LEVELS[1].min, minGain, cutoff
 end

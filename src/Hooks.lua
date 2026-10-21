@@ -87,10 +87,15 @@ end
 
 -- modifier types (volume / pitch / ... curves in sound XMLs) whose value the preview replaces, as value in the unit of
 -- the type: MOTOR_LOAD = load -1 .. 1 (e.g. template transmissionModern_04), MOTOR_RPM_REAL = absolute rpm
--- (e.g. 800 .. 2200 in sounds/layers.xml); nil = real value
+-- (e.g. 800 .. 2200 in sounds/layers.xml), MOTOR_RPM = 0 .. 1 between min and max rpm (Motorized:getMotorRpmPercentage,
+-- the same range as previewRpm; v1.1.0.0: .ogg engine loops of mods, e.g. Unimog U1450, user test 2026-10-20);
+-- nil = real value
 MotorSoundConfigurator.PREVIEW_MODIFIER_TYPES = {
     MOTOR_LOAD = function(vehicle)
         return MotorSoundConfigurator.previewLoad
+    end,
+    MOTOR_RPM = function(vehicle)
+        return MotorSoundConfigurator.previewRpm
     end,
     MOTOR_RPM_REAL = function(vehicle)
         return MotorSoundConfigurator.getPreviewRpm(vehicle, MotorSoundConfigurator.previewRpm)

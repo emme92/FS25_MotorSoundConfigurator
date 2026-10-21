@@ -294,46 +294,52 @@
                 <Text profile="motorSoundCfgColumnHeader" position="55px -165px" text="$l10n_msc_layer_column_sound"/>
                 <Text profile="motorSoundCfgColumnHeader" position="360px -165px" text="$l10n_msc_layer_column_volume"/>
 
-                <Text profile="motorSoundCfgLayerLabel" id="layerRow1Label" position="-250px -203px" text=""/>
+                <Text profile="motorSoundCfgLayerLabel" id="layerRow1Label" position="-260px -203px" text=""/>
                 <MultiTextOption profile="motorSoundCfgLayerChoice" id="layerRow1Choice" position="55px -198px" onClick="onLayerChoiceChanged_1"/>
                 <OptionSlider profile="motorSoundCfgSliderNarrow" id="layerRow1Volume" position="360px -195px" onClick="onLayerVolumeChanged_1"/>
                 <Text profile="motorSoundCfgValue" id="layerRow1Value" position="505px -203px" text=""/>
 
-                <Text profile="motorSoundCfgLayerLabel" id="layerRow2Label" position="-250px -245px" text=""/>
+                <Text profile="motorSoundCfgLayerLabel" id="layerRow2Label" position="-260px -245px" text=""/>
                 <MultiTextOption profile="motorSoundCfgLayerChoice" id="layerRow2Choice" position="55px -240px" onClick="onLayerChoiceChanged_2"/>
                 <OptionSlider profile="motorSoundCfgSliderNarrow" id="layerRow2Volume" position="360px -237px" onClick="onLayerVolumeChanged_2"/>
                 <Text profile="motorSoundCfgValue" id="layerRow2Value" position="505px -245px" text=""/>
 
-                <Text profile="motorSoundCfgLayerLabel" id="layerRow3Label" position="-250px -287px" text=""/>
+                <Text profile="motorSoundCfgLayerLabel" id="layerRow3Label" position="-260px -287px" text=""/>
                 <MultiTextOption profile="motorSoundCfgLayerChoice" id="layerRow3Choice" position="55px -282px" onClick="onLayerChoiceChanged_3"/>
                 <OptionSlider profile="motorSoundCfgSliderNarrow" id="layerRow3Volume" position="360px -279px" onClick="onLayerVolumeChanged_3"/>
                 <Text profile="motorSoundCfgValue" id="layerRow3Value" position="505px -287px" text=""/>
 
-                <Text profile="motorSoundCfgLayerLabel" id="layerRow4Label" position="-250px -329px" text=""/>
+                <Text profile="motorSoundCfgLayerLabel" id="layerRow4Label" position="-260px -329px" text=""/>
                 <MultiTextOption profile="motorSoundCfgLayerChoice" id="layerRow4Choice" position="55px -324px" onClick="onLayerChoiceChanged_4"/>
                 <OptionSlider profile="motorSoundCfgSliderNarrow" id="layerRow4Volume" position="360px -321px" onClick="onLayerVolumeChanged_4"/>
                 <Text profile="motorSoundCfgValue" id="layerRow4Value" position="505px -329px" text=""/>
 
-                <Text profile="motorSoundCfgLayerLabel" id="layerRow5Label" position="-250px -371px" text=""/>
+                <Text profile="motorSoundCfgLayerLabel" id="layerRow5Label" position="-260px -371px" text=""/>
                 <MultiTextOption profile="motorSoundCfgLayerChoice" id="layerRow5Choice" position="55px -366px" onClick="onLayerChoiceChanged_5"/>
                 <OptionSlider profile="motorSoundCfgSliderNarrow" id="layerRow5Volume" position="360px -363px" onClick="onLayerVolumeChanged_5"/>
                 <Text profile="motorSoundCfgValue" id="layerRow5Value" position="505px -371px" text=""/>
 
-                <Text profile="motorSoundCfgLayerLabel" id="layerRow6Label" position="-250px -413px" text=""/>
+                <Text profile="motorSoundCfgLayerLabel" id="layerRow6Label" position="-260px -413px" text=""/>
                 <MultiTextOption profile="motorSoundCfgLayerChoice" id="layerRow6Choice" position="55px -408px" onClick="onLayerChoiceChanged_6"/>
                 <OptionSlider profile="motorSoundCfgSliderNarrow" id="layerRow6Volume" position="360px -405px" onClick="onLayerVolumeChanged_6"/>
                 <Text profile="motorSoundCfgValue" id="layerRow6Value" position="505px -413px" text=""/>
 
-                <Text profile="motorSoundCfgLayerLabel" id="layerRow7Label" position="-250px -455px" text=""/>
+                <Text profile="motorSoundCfgLayerLabel" id="layerRow7Label" position="-260px -455px" text=""/>
                 <MultiTextOption profile="motorSoundCfgLayerChoice" id="layerRow7Choice" position="55px -450px" onClick="onLayerChoiceChanged_7"/>
                 <OptionSlider profile="motorSoundCfgSliderNarrow" id="layerRow7Volume" position="360px -447px" onClick="onLayerVolumeChanged_7"/>
                 <Text profile="motorSoundCfgValue" id="layerRow7Value" position="505px -455px" text=""/>
 
                 <!-- row 8 (v0.18.0.0; row 9 of the turbo group removed in v0.18.1.0) -->
-                <Text profile="motorSoundCfgLayerLabel" id="layerRow8Label" position="-250px -497px" text=""/>
+                <Text profile="motorSoundCfgLayerLabel" id="layerRow8Label" position="-260px -497px" text=""/>
                 <MultiTextOption profile="motorSoundCfgLayerChoice" id="layerRow8Choice" position="55px -492px" onClick="onLayerChoiceChanged_8"/>
                 <OptionSlider profile="motorSoundCfgSliderNarrow" id="layerRow8Volume" position="360px -489px" onClick="onLayerVolumeChanged_8"/>
                 <Text profile="motorSoundCfgValue" id="layerRow8Value" position="505px -497px" text=""/>
+
+                <!-- row 9 (v1.1.0.0): group "Engine (mods & DLCs)", only shown when engines from mods / DLCs were found -->
+                <Text profile="motorSoundCfgLayerLabel" id="layerRow9Label" position="-260px -539px" text=""/>
+                <MultiTextOption profile="motorSoundCfgLayerChoice" id="layerRow9Choice" position="55px -534px" onClick="onLayerChoiceChanged_9"/>
+                <OptionSlider profile="motorSoundCfgSliderNarrow" id="layerRow9Volume" position="360px -531px" onClick="onLayerVolumeChanged_9"/>
+                <Text profile="motorSoundCfgValue" id="layerRow9Value" position="505px -539px" text=""/>
             </GuiElement>
 
             <!-- page "Presets" (v0.13.0.0): one toggle button per preset, green = active. presetButton1 .. 12 follow the
@@ -363,65 +369,78 @@
             <!-- page "Engine swap" (v0.16.0.0, user 2026-10-11): volume of the swapped engine in the place of the scope
                  row, then one toggle button per engine of the catalog group "engine" (src/EngineSwap.lua), green =
                  active; swapButton1 = "Own engine", 2 .. 50 = engines sorted by name, filled column by column.
-                 Five columns of 155px every 165px (-307 .. 507, as wide as the presets page), ten rows every 40px
-                 (-170 .. -564) -->
+                 Five columns of 155px every 165px (-307 .. 507, as wide as the presets page), ten rows every 38px
+                 (-182 .. -556, buttons 32px high since v1.1.0.0) -->
             <GuiElement profile="emptyPanel" id="swapPage">
-                <Text profile="motorSoundCfgLabel" id="swapVolumeLabel" position="-215px -128px" text="$l10n_msc_swap_volume"/>
-                <OptionSlider profile="motorSoundCfgSlider" id="swapVolumeOption" position="-10px -120px" onClick="onSwapVolumeChanged"/>
-                <Text profile="motorSoundCfgValue" id="swapVolumeValue" position="145px -128px" text=""/>
+                <Text profile="motorSoundCfgLabel" id="swapVolumeLabel" position="-320px -128px" text="$l10n_msc_swap_volume"/>
+                <OptionSlider profile="motorSoundCfgSlider" id="swapVolumeOption" position="-115px -120px" onClick="onSwapVolumeChanged"/>
+                <Text profile="motorSoundCfgValue" id="swapVolumeValue" position="40px -128px" text=""/>
                 <!-- shown instead of the volume row on vehicles without own engine samples (electric motors, review #23) -->
                 <Text profile="motorSoundCfgSwapHint" id="swapHintText" position="100px -128px" text="$l10n_msc_swap_unavailable" visible="false"/>
+                <!-- v1.1.0.0: lists "Base game" | "Mods & DLCs" (tractors) | "Other vehicles" right of the volume row (hidden
+                     with it); volume row moved 105px left for them, the engine grid starts 28px below (user 2026-10-20) -->
+                <Button profile="motorSoundCfgSwapViewButton" id="swapViewBaseButton" position="165px -120px" text="$l10n_msc_swap_viewBase" onClick="onClickSwapViewBase"/>
+                <Button profile="motorSoundCfgSwapViewButton" id="swapViewModButton" position="303px -120px" text="$l10n_msc_swap_viewMod" onClick="onClickSwapViewMod"/>
+                <Button profile="motorSoundCfgSwapViewButton" id="swapViewOtherButton" position="441px -120px" text="$l10n_msc_swap_viewOther" onClick="onClickSwapViewOther"/>
 
-                <Button profile="motorSoundCfgSwapButton" id="swapButton1" position="-230px -170px" text="" onClick="onClickSwap_1"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton2" position="-230px -210px" text="" onClick="onClickSwap_2"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton3" position="-230px -250px" text="" onClick="onClickSwap_3"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton4" position="-230px -290px" text="" onClick="onClickSwap_4"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton5" position="-230px -330px" text="" onClick="onClickSwap_5"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton6" position="-230px -370px" text="" onClick="onClickSwap_6"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton1" position="-230px -182px" text="" onClick="onClickSwap_1"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton2" position="-230px -220px" text="" onClick="onClickSwap_2"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton3" position="-230px -258px" text="" onClick="onClickSwap_3"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton4" position="-230px -296px" text="" onClick="onClickSwap_4"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton5" position="-230px -334px" text="" onClick="onClickSwap_5"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton6" position="-230px -372px" text="" onClick="onClickSwap_6"/>
                 <Button profile="motorSoundCfgSwapButton" id="swapButton7" position="-230px -410px" text="" onClick="onClickSwap_7"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton8" position="-230px -450px" text="" onClick="onClickSwap_8"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton9" position="-230px -490px" text="" onClick="onClickSwap_9"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton10" position="-230px -530px" text="" onClick="onClickSwap_10"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton11" position="-65px -170px" text="" onClick="onClickSwap_11"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton12" position="-65px -210px" text="" onClick="onClickSwap_12"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton13" position="-65px -250px" text="" onClick="onClickSwap_13"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton14" position="-65px -290px" text="" onClick="onClickSwap_14"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton15" position="-65px -330px" text="" onClick="onClickSwap_15"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton16" position="-65px -370px" text="" onClick="onClickSwap_16"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton8" position="-230px -448px" text="" onClick="onClickSwap_8"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton9" position="-230px -486px" text="" onClick="onClickSwap_9"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton10" position="-230px -524px" text="" onClick="onClickSwap_10"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton11" position="-65px -182px" text="" onClick="onClickSwap_11"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton12" position="-65px -220px" text="" onClick="onClickSwap_12"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton13" position="-65px -258px" text="" onClick="onClickSwap_13"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton14" position="-65px -296px" text="" onClick="onClickSwap_14"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton15" position="-65px -334px" text="" onClick="onClickSwap_15"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton16" position="-65px -372px" text="" onClick="onClickSwap_16"/>
                 <Button profile="motorSoundCfgSwapButton" id="swapButton17" position="-65px -410px" text="" onClick="onClickSwap_17"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton18" position="-65px -450px" text="" onClick="onClickSwap_18"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton19" position="-65px -490px" text="" onClick="onClickSwap_19"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton20" position="-65px -530px" text="" onClick="onClickSwap_20"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton21" position="100px -170px" text="" onClick="onClickSwap_21"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton22" position="100px -210px" text="" onClick="onClickSwap_22"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton23" position="100px -250px" text="" onClick="onClickSwap_23"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton24" position="100px -290px" text="" onClick="onClickSwap_24"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton25" position="100px -330px" text="" onClick="onClickSwap_25"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton26" position="100px -370px" text="" onClick="onClickSwap_26"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton18" position="-65px -448px" text="" onClick="onClickSwap_18"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton19" position="-65px -486px" text="" onClick="onClickSwap_19"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton20" position="-65px -524px" text="" onClick="onClickSwap_20"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton21" position="100px -182px" text="" onClick="onClickSwap_21"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton22" position="100px -220px" text="" onClick="onClickSwap_22"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton23" position="100px -258px" text="" onClick="onClickSwap_23"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton24" position="100px -296px" text="" onClick="onClickSwap_24"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton25" position="100px -334px" text="" onClick="onClickSwap_25"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton26" position="100px -372px" text="" onClick="onClickSwap_26"/>
                 <Button profile="motorSoundCfgSwapButton" id="swapButton27" position="100px -410px" text="" onClick="onClickSwap_27"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton28" position="100px -450px" text="" onClick="onClickSwap_28"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton29" position="100px -490px" text="" onClick="onClickSwap_29"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton30" position="100px -530px" text="" onClick="onClickSwap_30"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton31" position="265px -170px" text="" onClick="onClickSwap_31"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton32" position="265px -210px" text="" onClick="onClickSwap_32"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton33" position="265px -250px" text="" onClick="onClickSwap_33"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton34" position="265px -290px" text="" onClick="onClickSwap_34"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton35" position="265px -330px" text="" onClick="onClickSwap_35"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton36" position="265px -370px" text="" onClick="onClickSwap_36"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton28" position="100px -448px" text="" onClick="onClickSwap_28"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton29" position="100px -486px" text="" onClick="onClickSwap_29"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton30" position="100px -524px" text="" onClick="onClickSwap_30"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton31" position="265px -182px" text="" onClick="onClickSwap_31"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton32" position="265px -220px" text="" onClick="onClickSwap_32"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton33" position="265px -258px" text="" onClick="onClickSwap_33"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton34" position="265px -296px" text="" onClick="onClickSwap_34"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton35" position="265px -334px" text="" onClick="onClickSwap_35"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton36" position="265px -372px" text="" onClick="onClickSwap_36"/>
                 <Button profile="motorSoundCfgSwapButton" id="swapButton37" position="265px -410px" text="" onClick="onClickSwap_37"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton38" position="265px -450px" text="" onClick="onClickSwap_38"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton39" position="265px -490px" text="" onClick="onClickSwap_39"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton40" position="265px -530px" text="" onClick="onClickSwap_40"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton41" position="430px -170px" text="" onClick="onClickSwap_41"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton42" position="430px -210px" text="" onClick="onClickSwap_42"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton43" position="430px -250px" text="" onClick="onClickSwap_43"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton44" position="430px -290px" text="" onClick="onClickSwap_44"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton45" position="430px -330px" text="" onClick="onClickSwap_45"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton46" position="430px -370px" text="" onClick="onClickSwap_46"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton38" position="265px -448px" text="" onClick="onClickSwap_38"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton39" position="265px -486px" text="" onClick="onClickSwap_39"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton40" position="265px -524px" text="" onClick="onClickSwap_40"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton41" position="430px -182px" text="" onClick="onClickSwap_41"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton42" position="430px -220px" text="" onClick="onClickSwap_42"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton43" position="430px -258px" text="" onClick="onClickSwap_43"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton44" position="430px -296px" text="" onClick="onClickSwap_44"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton45" position="430px -334px" text="" onClick="onClickSwap_45"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton46" position="430px -372px" text="" onClick="onClickSwap_46"/>
                 <Button profile="motorSoundCfgSwapButton" id="swapButton47" position="430px -410px" text="" onClick="onClickSwap_47"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton48" position="430px -450px" text="" onClick="onClickSwap_48"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton49" position="430px -490px" text="" onClick="onClickSwap_49"/>
-                <Button profile="motorSoundCfgSwapButton" id="swapButton50" position="430px -530px" text="" onClick="onClickSwap_50"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton48" position="430px -448px" text="" onClick="onClickSwap_48"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton49" position="430px -486px" text="" onClick="onClickSwap_49"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapButton50" position="430px -524px" text="" onClick="onClickSwap_50"/>
+
+                <!-- v1.1.0.0, row below the buttons: hint on mod engines whose mod / DLC is missing with "Remove" (left),
+                     pages of the "Mods & DLCs" list (right, only with more than one page) -->
+                <Text profile="motorSoundCfgSwapMissing" id="swapMissingText" position="-94px -581px" text="" visible="false"/>
+                <Button profile="motorSoundCfgSwapButton" id="swapMissingButton" position="200px -574px" text="$l10n_msc_swap_removeMissing" onClick="onClickSwapRemoveMissing" visible="false"/>
+                <Button profile="motorSoundCfgSwapPageButton" id="swapPagePrevButton" position="322px -574px" text="&lt;" onClick="onClickSwapPagePrev" visible="false"/>
+                <Text profile="motorSoundCfgSwapPage" id="swapPageText" position="397px -581px" text="" visible="false"/>
+                <Button profile="motorSoundCfgSwapPageButton" id="swapPageNextButton" position="472px -574px" text="&gt;" onClick="onClickSwapPageNext" visible="false"/>
             </GuiElement>
 
             <Bitmap profile="motorSoundCfgSeparator" position="0px -637px"/>
@@ -582,7 +601,7 @@
 
         <!-- group label of the "Extra sounds" page: narrower than motorSoundCfgLabel so the wider choice fits -->
         <Profile name="motorSoundCfgLayerLabel" extends="fs25_textDefault" with="anchorTopCenter">
-            <size value="130px 20px"/>
+            <size value="150px 20px"/>
             <textSize value="15px"/>
             <textColor value="0.85 0.85 0.85 1"/>
             <textAlignment value="right"/>
@@ -724,7 +743,7 @@
             <iconTextOffset value="0px 0px"/>
             <handleFocus value="true"/>
             <fitToContent value="false"/>
-            <size value="155px 34px"/>
+            <size value="155px 32px"/>
             <textSize value="15px"/>
             <textUpperCase value="false"/>
             <textAutoWidth value="false"/>
@@ -743,6 +762,66 @@
         <Profile name="motorSoundCfgSwapHint" extends="fs25_textDefault" with="anchorTopCenter">
             <!-- over the five button columns (-307 .. 507), same row as the volume slider -->
             <size value="814px 20px"/>
+            <textSize value="15px"/>
+            <textColor value="0.85 0.85 0.85 1"/>
+            <textAlignment value="center"/>
+        </Profile>
+
+        <!-- engine swap page (v1.1.0.0): hint on a missing mod / DLC engine (left of its "Remove" button, -307 .. 118) -->
+        <Profile name="motorSoundCfgSwapMissing" extends="fs25_textDefault" with="anchorTopCenter">
+            <size value="425px 20px"/>
+            <textSize value="14px"/>
+            <textColor value="0.95 0.75 0.35 1"/>
+            <textAlignment value="left"/>
+        </Profile>
+
+        <!-- engine swap page (v1.1.0.0): list toggle, three buttons of 130px (100 .. 506), as motorSoundCfgSwapButton -->
+        <Profile name="motorSoundCfgSwapViewButton" extends="fs25_wideButton" with="anchorTopCenter">
+            <imageSliceId value="gui.colorPreset"/>
+            <iconSize value="0px 0px"/>
+            <iconTextOffset value="0px 0px"/>
+            <handleFocus value="true"/>
+            <fitToContent value="false"/>
+            <size value="130px 34px"/>
+            <textSize value="14px"/>
+            <textUpperCase value="false"/>
+            <textAutoWidth value="false"/>
+            <textColor value="0.89627 0.92158 0.81485 1"/>
+            <textFocusedColor value="1 1 1 1"/>
+            <textHighlightedColor value="1 1 1 1"/>
+            <textSelectedColor value="1 1 1 1"/>
+            <imageColor value="1 1 1 0.06"/>
+            <imageFocusedColor value="1 1 1 0.18"/>
+            <imageHighlightedColor value="1 1 1 0.18"/>
+            <imageSelectedColor value="0.22323 0.40724 0.00368 1"/>
+            <imageDisabledColor value="1 1 1 0.03"/>
+        </Profile>
+
+        <!-- engine swap page (v1.1.0.0): page buttons "<" / ">" of the "Mods & DLCs" list, as motorSoundCfgSwapButton -->
+        <Profile name="motorSoundCfgSwapPageButton" extends="fs25_wideButton" with="anchorTopCenter">
+            <imageSliceId value="gui.colorPreset"/>
+            <iconSize value="0px 0px"/>
+            <iconTextOffset value="0px 0px"/>
+            <handleFocus value="true"/>
+            <fitToContent value="false"/>
+            <size value="40px 34px"/>
+            <textSize value="15px"/>
+            <textUpperCase value="false"/>
+            <textAutoWidth value="false"/>
+            <textColor value="0.89627 0.92158 0.81485 1"/>
+            <textFocusedColor value="1 1 1 1"/>
+            <textHighlightedColor value="1 1 1 1"/>
+            <textSelectedColor value="1 1 1 1"/>
+            <imageColor value="1 1 1 0.06"/>
+            <imageFocusedColor value="1 1 1 0.18"/>
+            <imageHighlightedColor value="1 1 1 0.18"/>
+            <imageSelectedColor value="0.22323 0.40724 0.00368 1"/>
+            <imageDisabledColor value="1 1 1 0.03"/>
+        </Profile>
+
+        <!-- engine swap page (v1.1.0.0): "Page x / n" between the page buttons -->
+        <Profile name="motorSoundCfgSwapPage" extends="fs25_textDefault" with="anchorTopCenter">
+            <size value="100px 20px"/>
             <textSize value="15px"/>
             <textColor value="0.85 0.85 0.85 1"/>
             <textAlignment value="center"/>

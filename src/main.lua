@@ -1,7 +1,7 @@
 -- Motor Sound Configurator: mod event listener (entry point, loaded last, see modDesc.xml)
 -- Copyright (C) 2026 Emme92. Licensed under the GNU General Public License v3 (https://www.gnu.org/licenses/gpl-3.0.html).
 -- Files (load order in modDesc.xml): MotorSoundConfigurator.lua (table, constants, shared helpers), Settings.lua,
--- SampleAdjuster.lua, Layers.lua, Presets.lua, EngineSwap.lua, Hooks.lua, ConsoleCommands.lua,
+-- SampleAdjuster.lua, Layers.lua, ModEngines.lua, Presets.lua, EngineSwap.lua, Hooks.lua, ConsoleCommands.lua,
 -- MotorSoundConfiguratorDialog.lua, main.lua.
 
 function MotorSoundConfigurator:loadMap(name)
@@ -25,6 +25,8 @@ function MotorSoundConfigurator:loadMap(name)
     if MotorSoundConfigurator.isMultiplayerClient() then
         MotorSoundConfigurator.log("Multiplayer client, settings in modSettings/%s/%s", MotorSoundConfigurator.CLIENT_SETTINGS_DIRECTORY, MotorSoundConfigurator.CLIENT_SETTINGS_FILENAME)
     end
+    -- engines from mods and DLCs before the catalog, which adds them as their own group (ModEngines.lua)
+    MotorSoundConfigurator.detectModEngines()
     MotorSoundConfigurator.loadLayerCatalog()
     -- here and not on the first vehicle: no file access in the middle of vehicle loading, and the savegame save always
     -- has settings to write (review 2026-10-12 #19 / #22); after the catalog, unknown layers are dropped against it
@@ -46,6 +48,10 @@ function MotorSoundConfigurator:deleteMap()
     MotorSoundConfigurator.vehicleData = {}
     MotorSoundConfigurator.layerCatalog = {}
     MotorSoundConfigurator.layerGroups = {}
+    MotorSoundConfigurator.modEngines = {}
+    MotorSoundConfigurator.modEnginesByName = {}
+    MotorSoundConfigurator.modEngineAliases = {}
+    MotorSoundConfigurator.missingModEngineWarned = {}
     MotorSoundConfigurator.isOriginalMode = false
     MotorSoundConfigurator.debug = false
     MotorSoundConfigurator.previewVehicle = nil

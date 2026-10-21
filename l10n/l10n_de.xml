@@ -87,6 +87,20 @@
         <e k="msc_swap_volume" v="Tausch-Motor"/>
         <e k="msc_swap_unavailable" v="Kein Motor-Tausch möglich: Dieses Fahrzeug hat keinen eigenen Motor-Sound."/>
         <e k="msc_help_swap_volume" v="Lautstärke des getauschten Motors (10–300 %).&#10;100 % = etwa so laut wie in seinem eigenen Fahrzeug. Nur während eines Tauschs."/>
+        <!-- engines from mods and DLCs (v1.1.0.0, src/ModEngines.lua) -->
+        <e k="msc_swap_viewBase" v="Basisspiel"/>
+        <e k="msc_swap_viewMod" v="Mods &amp; DLCs"/>
+        <e k="msc_help_swap_viewBase" v="Zeigt die Motoren der Basisspiel-Fahrzeuge."/>
+        <e k="msc_help_swap_viewMod" v="Zeigt die Motoren der Traktoren aus deinen Mods und DLCs, nach Namen sortiert, so laut wie in ihrem eigenen Fahrzeug.&#10;Entfernst du den Mod später, fehlt sein Motor und der eigene Motor läuft wieder."/>
+        <e k="msc_swap_viewOther" v="Andere Fahrzeuge"/>
+        <e k="msc_help_swap_viewOther" v="Zeigt die Motoren aller anderen Fahrzeuge: Basisspiel-Fahrzeuge außerhalb der Liste „Basisspiel“ und die Fahrzeuge deiner Mods und DLCs (Lkw, Erntemaschinen, Lader, Autos, Züge ...).&#10;Entfernst du einen Mod später, fehlt sein Motor und der eigene Motor läuft wieder."/>
+        <e k="msc_help_swap_viewModNone" v="Keine Motoren aus Mods oder DLCs gefunden (motorisierte Fahrzeuge aktiver Mods und freigeschalteter DLCs)."/>
+        <e k="msc_swap_page" v="Seite %d / %d"/>
+        <e k="msc_help_swap_page" v="Vorherige / nächste Seite der Motoren aus Mods und DLCs.&#10;Controller: LT / RT, Tastatur: Bild auf / Bild ab."/>
+        <e k="msc_help_swap_modEngine" v="Eigener Motor auf 0 %% (auch Zusatz-Sounds „Eigener Motor“ aus), stattdessen der Motor des %s.&#10;Aus: %s  ·  Erneuter Klick = zurück zum eigenen Motor."/>
+        <e k="msc_swap_missing" v="Mod fehlt: %s · eigener Motor läuft"/>
+        <e k="msc_swap_removeMissing" v="Entfernen"/>
+        <e k="msc_help_swap_removeMissing" v="Entfernt den Motor des fehlenden Mods oder DLCs aus diesem Modell.&#10;Sonst bleibt er gespeichert und läuft wieder, sobald der Mod zurück ist."/>
 
         <!-- Presets (src/Presets.lua): Name und Beschreibung; die Werte listet der Dialog selbst auf -->
         <e k="msc_preset_column_cabin" v="Kabine"/>
@@ -125,6 +139,9 @@
 
         <!-- layer groups (sounds/layers.xml) -->
         <e k="msc_group_engine" v="Motor"/>
+        <e k="msc_group_modEngine" v="Motor (weitere)"/>
+        <e k="msc_help_group_modEngine" v="Mischt den Motor eines anderen Fahrzeugs dazu: Traktoren aus deinen Mods und DLCs und alle anderen Fahrzeuge (Basisspiel, Mods, DLCs), so laut wie in seinem eigenen Fahrzeug.&#10;Aus = nicht aktiv."/>
+        <e k="msc_swap_sourceBaseGame" v="Basisspiel"/>
         <e k="msc_group_ownEngine" v="Eigener Motor"/>
         <e k="msc_group_exhaust" v="Auspuff"/>
         <e k="msc_group_load" v="Last &amp; Ton"/>

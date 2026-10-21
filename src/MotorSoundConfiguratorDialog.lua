@@ -92,7 +92,7 @@ MotorSoundConfiguratorDialog.FOCUS_ORDER = {
     [MotorSoundConfiguratorDialog.PAGE_LAYERS] = {
         "layerRow1Choice", "layerRow1Volume", "layerRow2Choice", "layerRow2Volume", "layerRow3Choice", "layerRow3Volume",
         "layerRow4Choice", "layerRow4Volume", "layerRow5Choice", "layerRow5Volume", "layerRow6Choice", "layerRow6Volume",
-        "layerRow7Choice", "layerRow7Volume", "layerRow8Choice", "layerRow8Volume" },
+        "layerRow7Choice", "layerRow7Volume", "layerRow8Choice", "layerRow8Volume", "layerRow9Choice", "layerRow9Volume" },
     [MotorSoundConfiguratorDialog.PAGE_PRESETS] = { "presetButton1" },
     [MotorSoundConfiguratorDialog.PAGE_SWAP] = { "swapVolumeOption", "swapButton1" }
 }
@@ -106,11 +106,18 @@ end
 
 -- rows of the "Extra sounds" page (layerRow1 .. layerRow8 in the XML), one per layer group (v0.18.0.0: rattle, rumble
 -- and fan each in their own group, so they can play together, user 2026-10-13; turbo group removed again in v0.18.1.0)
-MotorSoundConfiguratorDialog.LAYER_ROWS = 8
+-- v1.1.0.0: row 9 for the group "Engine (mods & DLCs)" (only shown when engines from mods / DLCs were found)
+MotorSoundConfiguratorDialog.LAYER_ROWS = 9
 -- buttons of the "Presets" page (presetButton1 .. presetButton12 in the XML), one per preset
 MotorSoundConfiguratorDialog.PRESET_BUTTONS = 12
 -- buttons of the "Engine swap" page (swapButton1 .. swapButton50 in the XML): 1 = own engine, then one per engine
 MotorSoundConfiguratorDialog.SWAP_BUTTONS = 50
+-- lists of the "Engine swap" page (v1.1.0.0, user 2026-10-20): base game catalog or engines from mods and DLCs; the mod
+-- lists have pages of SWAP_BUTTONS - 1 engines ("Own engine" first on every page). SWAP_VIEW_MOD = tractors from mods /
+-- DLCs, SWAP_VIEW_OTHER = their other vehicles (trucks, harvesters, cars, trains ..., user 2026-10-20)
+MotorSoundConfiguratorDialog.SWAP_VIEW_BASE = 1
+MotorSoundConfiguratorDialog.SWAP_VIEW_MOD = 2
+MotorSoundConfiguratorDialog.SWAP_VIEW_OTHER = 3
 -- volume of a sound chosen in a layer row before its slider was touched
 MotorSoundConfiguratorDialog.LAYER_DEFAULT_VOLUME = 1.0
 -- marker behind labels / tabs whose values differ from the original sound
@@ -172,6 +179,11 @@ function MotorSoundConfiguratorDialog.new(target, customMt)
     self.shownLoad = nil
     -- input help mode the "Apply" key was set for (GS_INPUT_HELP_MODE_*), nil = not set yet
     self.lastInputMode = nil
+    -- "Engine swap" page: shown list (SWAP_VIEW_*) and page of the mod list (1 based); chosen on the first update after
+    -- opening (isSwapViewChosen false), so the list of an active swap is shown
+    self.swapView = MotorSoundConfiguratorDialog.SWAP_VIEW_BASE
+    self.swapPageIndex = 1
+    self.isSwapViewChosen = false
 
     return self
 end
@@ -211,6 +223,7 @@ function MotorSoundConfiguratorDialog:setVehicleData(vehicleData)
     self.isClosePending = false
     -- always opens for the model the player sits in (user 2026-10-02)
     self.scopeIndex = MotorSoundConfiguratorDialog.SCOPE_MODEL
+    self.isSwapViewChosen = false
 end
 
 
@@ -283,6 +296,12 @@ function MotorSoundConfiguratorDialog:onGuiSetupFinished()
         self:extendSliderDrag(self.swapVolumeOption)
         self:connectHelpText(self.swapVolumeOption, "msc_help_swap_volume")
     end
+    self:connectHelpText(self.swapViewBaseButton, "msc_help_swap_viewBase")
+    self:connectHelpText(self.swapViewModButton, "msc_help_swap_viewMod")
+    self:connectHelpText(self.swapViewOtherButton, "msc_help_swap_viewOther")
+    self:connectHelpText(self.swapPagePrevButton, "msc_help_swap_page")
+    self:connectHelpText(self.swapPageNextButton, "msc_help_swap_page")
+    self:connectHelpText(self.swapMissingButton, "msc_help_swap_removeMissing")
 
     -- full width of the meter bars, the fill is resized to rpm / load
     if self.rpmMeterFill ~= nil then
@@ -666,6 +685,10 @@ end
 
 
 function MotorSoundConfiguratorDialog.getLayerText(layer)
+    -- engines from mods and DLCs: brand + store name (not translated)
+    if layer.isModEngine then
+        return layer.fullName
+    end
     return MotorSoundConfiguratorDialog.getTextOrKey("msc_layer_" .. layer.name, layer.name)
 end
 
@@ -1448,10 +1471,21 @@ function MotorSoundConfiguratorDialog:updateLayerRows()
             local activeLayer = activeIndex ~= nil and group.layers[activeIndex] or nil
             self.rowActiveLayers[row] = activeLayer
 
-            label:setText(MotorSoundConfiguratorDialog.getGroupText(group.name) .. (activeLayer ~= nil and MotorSoundConfiguratorDialog.CHANGED_MARKER or ""))
+            -- "Engine (more)" with an engine whose mod is missing: shown "Off" (no sound), marked and with the hint of
+            -- the swap page in the help line, as the setting is kept (review 2026-10-20)
+            local missingText = nil
+            if activeLayer == nil and group.name == MotorSoundConfigurator.MOD_ENGINE_GROUP then
+                missingText = MotorSoundConfiguratorDialog.getMissingModEngineText(self:getModelKey())
+            end
+            local isChanged = activeLayer ~= nil or missingText ~= nil
+            label:setText(MotorSoundConfiguratorDialog.getGroupText(group.name) .. (isChanged and MotorSoundConfiguratorDialog.CHANGED_MARKER or ""))
             choice:setTexts(texts)
             choice:setState(activeIndex ~= nil and activeIndex + 1 or 1)
-            self:setHelpText(choice, MotorSoundConfiguratorDialog.getLayerHelpText(group, activeLayer))
+            local helpText = MotorSoundConfiguratorDialog.getLayerHelpText(group, activeLayer)
+            if missingText ~= nil then
+                helpText = missingText .. "\n" .. helpText
+            end
+            self:setHelpText(choice, helpText)
 
             volume:setTexts(volumeTexts)
             local layerVolume = activeLayer ~= nil and modelLayers[activeLayer.name].volume or MotorSoundConfiguratorDialog.LAYER_DEFAULT_VOLUME
@@ -1498,7 +1532,104 @@ end
 
 -- help line of an engine button: what the swap does, with the full name of the source vehicle
 function MotorSoundConfiguratorDialog.getSwapHelpText(layer)
+    -- engines from mods and DLCs: full name and the mod / DLC it comes from
+    if layer.isModEngine then
+        return string.format(g_i18n:getText("msc_help_swap_modEngine"), layer.fullName, layer.modTitle)
+    end
     return string.format(g_i18n:getText("msc_help_swap_engine"), layer.source or MotorSoundConfigurator.getSwapEngineName(layer))
+end
+
+
+-- mod / DLC folder of a donor key ("$moddir$FS25_X/..." -> "FS25_X"), for the hint on a missing engine
+function MotorSoundConfiguratorDialog.getDonorSourceName(donorKey)
+    local name = donorKey
+    for _, prefix in ipairs({ "$moddir$", "$pdlcdir$" }) do
+        if string.startsWith(name, prefix) then
+            name = string.sub(name, string.len(prefix) + 1)
+        end
+    end
+    local slash = string.find(name, "/", 1, true)
+    if slash ~= nil and slash > 1 then
+        name = string.sub(name, 1, slash - 1)
+    end
+    return name
+end
+
+
+-- hint on the model's mod / DLC engines whose mod is missing ("Mod missing: FS25_X, ..."), nil if none; swap page and
+-- the "Engine (more)" row of the "Extra sounds" page
+function MotorSoundConfiguratorDialog.getMissingModEngineText(modelKey)
+    local missing = MotorSoundConfigurator.getMissingModEngines(modelKey)
+    if #missing == 0 then
+        return nil
+    end
+    local sourceNames = {}
+    for _, layerName in ipairs(missing) do
+        table.insert(sourceNames, MotorSoundConfiguratorDialog.getDonorSourceName(MotorSoundConfigurator.getModEngineDonorKey(layerName)))
+    end
+    return string.format(g_i18n:getText("msc_swap_missing"), table.concat(sourceNames, ", "))
+end
+
+
+-- engines per page of the mod list ("Own engine" takes the first button)
+function MotorSoundConfiguratorDialog.getSwapPageSize()
+    return MotorSoundConfiguratorDialog.SWAP_BUTTONS - 1
+end
+
+
+-- all engines of a list: base game catalog, tractors from mods / DLCs or their other vehicles
+function MotorSoundConfiguratorDialog.getSwapViewEngines(view)
+    if view == MotorSoundConfiguratorDialog.SWAP_VIEW_MOD then
+        return MotorSoundConfigurator.getModEnginesOfKind(true)
+    elseif view == MotorSoundConfiguratorDialog.SWAP_VIEW_OTHER then
+        return MotorSoundConfigurator.getModEnginesOfKind(false)
+    end
+    return MotorSoundConfigurator.getSwapEngines()
+end
+
+
+-- pages of a mod list (the base game list has one page)
+function MotorSoundConfiguratorDialog.getSwapPageCount(view)
+    if view == MotorSoundConfiguratorDialog.SWAP_VIEW_BASE then
+        return 1
+    end
+    local count = #MotorSoundConfiguratorDialog.getSwapViewEngines(view)
+    return math.max(1, math.ceil(count / MotorSoundConfiguratorDialog.getSwapPageSize()))
+end
+
+
+-- engines on the buttons 2 .. SWAP_BUTTONS for the shown list / page
+function MotorSoundConfiguratorDialog:getShownSwapEngines()
+    if self.swapView == MotorSoundConfiguratorDialog.SWAP_VIEW_BASE then
+        return MotorSoundConfigurator.getSwapEngines()
+    end
+    local engines = MotorSoundConfiguratorDialog.getSwapViewEngines(self.swapView)
+    local pageSize = MotorSoundConfiguratorDialog.getSwapPageSize()
+    local shown = {}
+    local first = (self.swapPageIndex - 1) * pageSize + 1
+    for index = first, math.min(first + pageSize - 1, #engines) do
+        table.insert(shown, engines[index])
+    end
+    return shown
+end
+
+
+-- list shown when the page is first updated after opening: the one of the active swap (its page for a mod engine),
+-- otherwise the base game
+function MotorSoundConfiguratorDialog:chooseSwapView()
+    self.isSwapViewChosen = true
+    self.swapView = MotorSoundConfiguratorDialog.SWAP_VIEW_BASE
+    self.swapPageIndex = 1
+    local activeLayer = MotorSoundConfigurator.getActiveSwap(self:getModelKey())
+    if activeLayer ~= nil and activeLayer.isModEngine then
+        self.swapView = MotorSoundConfigurator.isModTractorEngine(activeLayer) and MotorSoundConfiguratorDialog.SWAP_VIEW_MOD
+            or MotorSoundConfiguratorDialog.SWAP_VIEW_OTHER
+        for index, layer in ipairs(MotorSoundConfiguratorDialog.getSwapViewEngines(self.swapView)) do
+            if layer == activeLayer then
+                self.swapPageIndex = math.ceil(index / MotorSoundConfiguratorDialog.getSwapPageSize())
+            end
+        end
+    end
 end
 
 
@@ -1513,9 +1644,52 @@ end
 -- hidden), the volume slider only usable during a swap; without own engine samples the engines are locked and a hint
 -- replaces the volume row
 function MotorSoundConfiguratorDialog:updateSwapPage()
-    local engines = MotorSoundConfigurator.getSwapEngines()
+    if not self.isSwapViewChosen then
+        self:chooseSwapView()
+    end
+    if #MotorSoundConfiguratorDialog.getSwapViewEngines(self.swapView) == 0 then
+        self.swapView = MotorSoundConfiguratorDialog.SWAP_VIEW_BASE
+    end
+    local pageCount = MotorSoundConfiguratorDialog.getSwapPageCount(self.swapView)
+    self.swapPageIndex = math.clamp(self.swapPageIndex, 1, pageCount)
+    local isModView = self.swapView ~= MotorSoundConfiguratorDialog.SWAP_VIEW_BASE
+
+    local engines = self:getShownSwapEngines()
     local activeLayer, activeVolume = MotorSoundConfigurator.getActiveSwap(self:getModelKey())
     local canSwap = self:canSwapEngine()
+
+    -- list toggle (green = shown list), only with the volume row; a mod list without engines is locked
+    for _, toggle in ipairs({ { self.swapViewBaseButton, MotorSoundConfiguratorDialog.SWAP_VIEW_BASE, "msc_help_swap_viewBase" },
+                              { self.swapViewModButton, MotorSoundConfiguratorDialog.SWAP_VIEW_MOD, "msc_help_swap_viewMod" },
+                              { self.swapViewOtherButton, MotorSoundConfiguratorDialog.SWAP_VIEW_OTHER, "msc_help_swap_viewOther" } }) do
+        local button, view, helpKey = toggle[1], toggle[2], toggle[3]
+        if button ~= nil then
+            local hasEngines = #MotorSoundConfiguratorDialog.getSwapViewEngines(view) > 0
+            button:setVisible(canSwap)
+            button:setSelected(self.swapView == view)
+            button:setDisabled(not hasEngines)
+            self:setHelpText(button, g_i18n:getText(hasEngines and helpKey or "msc_help_swap_viewModNone"))
+        end
+    end
+    -- pages of the mod lists
+    local hasPages = isModView and pageCount > 1
+    for _, elementId in ipairs({ "swapPagePrevButton", "swapPageText", "swapPageNextButton" }) do
+        if self[elementId] ~= nil then
+            self[elementId]:setVisible(hasPages)
+        end
+    end
+    if hasPages and self.swapPageText ~= nil then
+        self.swapPageText:setText(string.format(g_i18n:getText("msc_swap_page"), self.swapPageIndex, pageCount))
+    end
+    -- engines from mods / DLCs set for this model whose mod is missing: hint with "Remove", no popup (user 2026-10-20)
+    local missingText = MotorSoundConfiguratorDialog.getMissingModEngineText(self:getModelKey())
+    if self.swapMissingButton ~= nil then
+        self.swapMissingButton:setVisible(missingText ~= nil)
+    end
+    if self.swapMissingText ~= nil then
+        self.swapMissingText:setVisible(missingText ~= nil)
+        self.swapMissingText:setText(missingText or "")
+    end
 
     if self.swapButton1 ~= nil then
         self.swapButton1:setText(g_i18n:getText("msc_swap_own"))
@@ -1542,8 +1716,9 @@ function MotorSoundConfiguratorDialog:updateSwapPage()
     if self.swapHintText ~= nil then
         self.swapHintText:setVisible(not canSwap)
     end
-    -- once per catalog list (getSwapEngines builds a new table after loadLayerCatalog), not on every update (review #37)
-    if #engines > MotorSoundConfiguratorDialog.SWAP_BUTTONS - 1 and self.swapOverflowWarned ~= engines then
+    -- once per catalog list (getSwapEngines builds a new table after loadLayerCatalog), not on every update (review #37);
+    -- the mod list has pages
+    if not isModView and #engines > MotorSoundConfiguratorDialog.SWAP_BUTTONS - 1 and self.swapOverflowWarned ~= engines then
         self.swapOverflowWarned = engines
         MotorSoundConfigurator.logWarning("%d swap engines, only %d fit into the dialog", #engines, MotorSoundConfiguratorDialog.SWAP_BUTTONS - 1)
     end
@@ -1774,6 +1949,14 @@ function MotorSoundConfiguratorDialog:inputEvent(action, value, eventUsed)
                 FocusManager:setFocus(tab)
             end
             return true
+        elseif (action == InputAction.MENU_LIST_PAGE_PREV or action == InputAction.MENU_LIST_PAGE_NEXT)
+            and self.page == MotorSoundConfiguratorDialog.PAGE_SWAP then
+            -- pages of the mod list on the "Engine swap" page (v1.1.0.0): LT / RT on the controller, Page up / down on the
+            -- keyboard (profileTemplate/inputBindingDefault_*.xml; Gui.NAV_ACTIONS passes them to the dialog, dataS.gar
+            -- gui/base/Gui.lua); LB / RB stay the tab switch
+            if self:changeSwapPage(action == InputAction.MENU_LIST_PAGE_NEXT and 1 or -1) then
+                return true
+            end
         elseif action == InputAction[MotorSoundConfiguratorDialog.APPLY_ACTION_GAMEPAD] and self:isGamepadMode() then
             self:onClickApply()
             return true
@@ -1959,7 +2142,7 @@ function MotorSoundConfiguratorDialog:onLayerChoiceChanged(row)
     else
         MotorSoundConfigurator.clearLayerGroup(self.vehicleData, group.name, nil)
         -- "Off" in the engine row also ends a swap whose engine it was (own engine back from 0 %, review #18)
-        if group.name == MotorSoundConfigurator.SWAP_GROUP and MotorSoundConfigurator.endSwapWithoutEngine(self.vehicleData) then
+        if MotorSoundConfigurator.isSwapGroup(group.name) and MotorSoundConfigurator.endSwapWithoutEngine(self.vehicleData) then
             MotorSoundConfigurator.applyToAllVehicles()
         end
     end
@@ -2014,7 +2197,7 @@ function MotorSoundConfiguratorDialog:onClickSwap(index)
     if self.vehicleData == nil then
         return
     end
-    local layer = index > 1 and MotorSoundConfigurator.getSwapEngines()[index - 1] or nil
+    local layer = index > 1 and self:getShownSwapEngines()[index - 1] or nil
     -- engines are locked without own engine samples (review #23); "Own engine" still ends a leftover swap
     if index > 1 and (layer == nil or not self:canSwapEngine()) then
         return
@@ -2056,6 +2239,86 @@ function MotorSoundConfiguratorDialog:onSwapVolumeChanged()
     if self.swapVolumeValue ~= nil then
         self.swapVolumeValue:setText(MotorSoundConfiguratorDialog.formatPercent(volume))
     end
+end
+
+
+-- list toggle of the "Engine swap" page: base game / mods & DLCs (v1.1.0.0)
+function MotorSoundConfiguratorDialog:setSwapView(view)
+    if #MotorSoundConfiguratorDialog.getSwapViewEngines(view) == 0 then
+        return
+    end
+    self.isSwapViewChosen = true
+    if self.swapView ~= view then
+        self.swapView = view
+        self.swapPageIndex = 1
+    end
+    self:updateSwapPage()
+    self:keepSwapFocus()
+end
+
+
+function MotorSoundConfiguratorDialog:onClickSwapViewBase()
+    self:setSwapView(MotorSoundConfiguratorDialog.SWAP_VIEW_BASE)
+end
+
+
+function MotorSoundConfiguratorDialog:onClickSwapViewMod()
+    self:setSwapView(MotorSoundConfiguratorDialog.SWAP_VIEW_MOD)
+end
+
+
+function MotorSoundConfiguratorDialog:onClickSwapViewOther()
+    self:setSwapView(MotorSoundConfiguratorDialog.SWAP_VIEW_OTHER)
+end
+
+
+-- previous / next page of the mod list, wraps around; buttons "<" / ">", LT / RT and Page up / down (inputEvent)
+function MotorSoundConfiguratorDialog:changeSwapPage(step)
+    if self.swapView == MotorSoundConfiguratorDialog.SWAP_VIEW_BASE then
+        return false
+    end
+    local pageCount = MotorSoundConfiguratorDialog.getSwapPageCount(self.swapView)
+    if pageCount <= 1 then
+        return false
+    end
+    self.swapPageIndex = (self.swapPageIndex - 1 + step) % pageCount + 1
+    self:updateSwapPage()
+    self:keepSwapFocus()
+    return true
+end
+
+
+function MotorSoundConfiguratorDialog:onClickSwapPagePrev()
+    self:changeSwapPage(-1)
+end
+
+
+function MotorSoundConfiguratorDialog:onClickSwapPageNext()
+    self:changeSwapPage(1)
+end
+
+
+-- the focused engine button may be hidden on the new page (fewer engines): focus "Own engine"
+function MotorSoundConfiguratorDialog:keepSwapFocus()
+    local focused = FocusManager:getFocusedElement()
+    if self.swapButton1 ~= nil and (focused == nil or not focused:getIsVisible() or focused:getIsDisabled()) then
+        FocusManager:setFocus(self.swapButton1)
+    end
+end
+
+
+-- "Remove" next to the hint on missing mod / DLC engines: their entries go, a swap with one of them ends
+function MotorSoundConfiguratorDialog:onClickSwapRemoveMissing()
+    if self.vehicleData == nil then
+        return
+    end
+    self:endOriginalMode()
+    if MotorSoundConfigurator.removeMissingModEngines(self.vehicleData) then
+        MotorSoundConfigurator.applyToAllVehicles()
+    end
+    self:updateSwapPage()
+    self:updateTabs()
+    self:keepSwapFocus()
 end
 
 
@@ -2118,7 +2381,7 @@ function MotorSoundConfiguratorDialog:onClickReset()
         end
     elseif self.page == MotorSoundConfiguratorDialog.PAGE_LAYERS then
         if self.vehicleData ~= nil then
-            local hadSwapEngine = MotorSoundConfigurator.getSwapEngineLayer(self.vehicleData.modelKey) ~= nil
+            local hadSwapEngine = MotorSoundConfigurator.hasSwapEngine(self.vehicleData.modelKey)
             MotorSoundConfigurator.resetModelLayers(self.vehicleData.modelKey)
             -- also removes the engine of a swap: the own engine comes back from 0 % (review #18)
             if hadSwapEngine and MotorSoundConfigurator.endSwapWithoutEngine(self.vehicleData) then

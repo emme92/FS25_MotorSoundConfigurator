@@ -26,12 +26,19 @@ function MotorSoundConfigurator:consoleCommandLayer(layerName, arg)
         return err
     end
 
-    if layerName == nil or MotorSoundConfigurator.getCatalogLayer(layerName) == nil then
+    -- an engine whose mod / DLC is missing can still be removed (review 2026-10-20)
+    local isMissingRemove = arg == "remove" and MotorSoundConfigurator.isModEngineMissing(layerName)
+    if layerName == nil or (MotorSoundConfigurator.getCatalogLayer(layerName) == nil and not isMissingRemove) then
         local groupTexts = {}
         for _, group in ipairs(MotorSoundConfigurator.getLayerGroups()) do
             local names = {}
-            for _, layer in ipairs(group.layers) do
-                table.insert(names, layer.name)
+            -- mod / DLC engines can be many: only their count and the name form
+            if group.name == MotorSoundConfigurator.MOD_ENGINE_GROUP then
+                table.insert(names, string.format("%d engines, %s<donor vehicle key>", #group.layers, MotorSoundConfigurator.MOD_ENGINE_PREFIX))
+            else
+                for _, layer in ipairs(group.layers) do
+                    table.insert(names, layer.name)
+                end
             end
             table.insert(groupTexts, string.format("%s: %s", group.name, table.concat(names, ", ")))
         end
@@ -47,7 +54,7 @@ function MotorSoundConfigurator:consoleCommandLayer(layerName, arg)
     local setLayer = volume ~= nil and MotorSoundConfigurator.setGroupLayer or MotorSoundConfigurator.setModelLayer
     setLayer(data, layerName, volume)
     -- removing the engine of a swap brings the own engine back from 0 % (as in the dialog, review #18)
-    if volume == nil and MotorSoundConfigurator.getCatalogLayer(layerName).group == MotorSoundConfigurator.SWAP_GROUP
+    if volume == nil and MotorSoundConfigurator.isSwapGroup(MotorSoundConfigurator.getLayerGroupName(layerName))
         and MotorSoundConfigurator.endSwapWithoutEngine(data) then
         MotorSoundConfigurator.applyToAllVehicles()
     end

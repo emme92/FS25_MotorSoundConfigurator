@@ -87,6 +87,20 @@
         <e k="msc_swap_volume" v="Swap engine"/>
         <e k="msc_swap_unavailable" v="Engine swap not available: this vehicle has no own engine sound."/>
         <e k="msc_help_swap_volume" v="Volume of the swapped engine (10-300 %).&#10;100 % = about as loud as in its own vehicle. Only during a swap."/>
+        <!-- engines from mods and DLCs (v1.1.0.0, src/ModEngines.lua) -->
+        <e k="msc_swap_viewBase" v="Base game"/>
+        <e k="msc_swap_viewMod" v="Mods &amp; DLCs"/>
+        <e k="msc_help_swap_viewBase" v="Shows the engines of base game vehicles."/>
+        <e k="msc_help_swap_viewMod" v="Shows the engines of the tractors from your mods and DLCs, sorted by name, as loud as in their own vehicle.&#10;If the mod is removed later, its engine is gone and the own engine plays again."/>
+        <e k="msc_swap_viewOther" v="Other vehicles"/>
+        <e k="msc_help_swap_viewOther" v="Shows the engines of all other vehicles: base game vehicles not in the 'Base game' list and the vehicles of your mods and DLCs (trucks, harvesters, loaders, cars, trains ...).&#10;If a mod is removed later, its engine is gone and the own engine plays again."/>
+        <e k="msc_help_swap_viewModNone" v="No engines from mods or DLCs found (motorized vehicles of active mods and unlocked DLCs)."/>
+        <e k="msc_swap_page" v="Page %d / %d"/>
+        <e k="msc_help_swap_page" v="Previous / next page of the engines from mods and DLCs.&#10;Controller: LT / RT, keyboard: Page up / Page down."/>
+        <e k="msc_help_swap_modEngine" v="Own engine at 0 %% (extra sounds 'Own Engine' off as well), the engine of the %s instead.&#10;From: %s  ·  Click again = back to the own engine."/>
+        <e k="msc_swap_missing" v="Mod missing: %s · own engine plays"/>
+        <e k="msc_swap_removeMissing" v="Remove"/>
+        <e k="msc_help_swap_removeMissing" v="Removes the engine of the missing mod or DLC from this model.&#10;Otherwise it stays saved and plays again as soon as the mod is back."/>
 
         <!-- presets (src/Presets.lua): name and description; the values are listed by the dialog -->
         <e k="msc_preset_column_cabin" v="Cabin"/>
@@ -125,6 +139,9 @@
 
         <!-- layer groups (sounds/layers.xml) -->
         <e k="msc_group_engine" v="Engine"/>
+        <e k="msc_group_modEngine" v="Engine (more)"/>
+        <e k="msc_help_group_modEngine" v="Mixes in the engine of another vehicle: tractors from your mods and DLCs and all other vehicles (base game, mods, DLCs), as loud as in its own vehicle.&#10;Off = not active."/>
+        <e k="msc_swap_sourceBaseGame" v="base game"/>
         <e k="msc_group_ownEngine" v="Own Engine"/>
         <e k="msc_group_exhaust" v="Exhaust"/>
         <e k="msc_group_load" v="Load &amp; Tone"/>

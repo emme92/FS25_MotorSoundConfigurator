@@ -11,11 +11,11 @@ vehicles directly in game, without editing sound XML files. Download: GIANTS Mod
 
 - **Alt + M** (controller: assign a button in Options > Controls) in a vehicle opens the configurator, every change is audible immediately
 - **Presets** for the vehicle model (punchier, more bass, insulated cabin …), combinable
-- **Engine swap**: replace the engine sound of a vehicle model completely with the engine of another base game vehicle
+- **Engine swap**: replace the engine sound of a vehicle model completely with the engine of another vehicle: calibrated base game engines, tractors from your mods and DLCs, and all other vehicles (base game, mods, DLCs)
 - **Engine & gearbox**: volume, pitch & speed, RPM character
 - **Other sounds**: volume of cabin & fan, parts rattle, work sounds of harvesters, attached implements (work, drive) and trailers (driving rattle)
 - **Filter**: how open the cabin sounds (up to "like outside"), tone and presence in the cabin and outside
-- **Extra sounds**: mix in exhausts, engines and transmissions of other base game vehicles
+- **Extra sounds**: mix in exhausts, engines and transmissions of other base game vehicles, engines from mods and DLCs
 - **Preview** at any RPM / load while standing still, **hear original** to compare
 - Settings for **all vehicles** or for **one vehicle model**, relative to the original sound (100 % = original)
 - Saved per savegame; multiplayer: every player has their own settings, nothing is synchronized
@@ -38,7 +38,8 @@ Full guide: **[docs/GUIDE.md](docs/GUIDE.md)**
   the icon, `src/`, `l10n/`, `gui/` and `sounds/` (only file types the game loads, as required by the GIANTS
   TestRunner).
 - Load order of the Lua files: `modDesc.xml` (`extraSourceFiles`). Extra sounds: catalog `sounds/layers.xml`, only base
-  game sounds via `$data/...`.
+  game sounds via `$data/...`; engines of other vehicles (`src/ModEngines.lua`) are read from their own installed sound
+  files when the map loads, nothing is copied.
 - Icon: `tools/make_icon.ps1` puts `assets/icon_source_transparent.png` on the official ModHub icon template of GIANTS
   (not included here, available from GIANTS).
 - Mod messages are written to `Documents\My Games\FarmingSimulator2025\log.txt` with the prefix
@@ -76,7 +77,8 @@ evaluate how to work with them.
 [GNU GPL v3](LICENSE) © 2026 Emme92: you may use, modify and redistribute the code. Anyone distributing a modified
 version or a mod containing this code must release it under the GPL v3 as well, with source code, and mark the
 changes. Applies to this mod's own files. Sounds and templates of the base game are only referenced via `$data/...`
-and belong to GIANTS Software. The mod zip contains no `LICENSE` file (ModHub only allows game file types); every
+and belong to GIANTS Software; engines of other mods and DLCs are loaded from their installed files at runtime and
+belong to their authors. The mod zip contains no `LICENSE` file (ModHub only allows game file types); every
 Lua file and the mod description carry the GPL notice with a link to the license text.
 
 ---
@@ -93,11 +95,11 @@ enthält den Quellcode.
 
 - **Alt + M** (Controller: Taste unter Optionen > Steuerung belegen) im Fahrzeug öffnet den Configurator, jede Änderung ist sofort hörbar
 - **Presets** für das Fahrzeug-Modell (kerniger, mehr Bass, gedämmte Kabine …), kombinierbar
-- **Motor-Tausch**: den Motor-Sound eines Fahrzeug-Modells ganz durch den Motor eines anderen Basisspiel-Fahrzeugs ersetzen
+- **Motor-Tausch**: den Motor-Sound eines Fahrzeug-Modells ganz durch den Motor eines anderen Fahrzeugs ersetzen: eingepegelte Basisspiel-Motoren, Traktoren aus deinen Mods und DLCs und alle anderen Fahrzeuge (Basisspiel, Mods, DLCs)
 - **Motor & Getriebe**: Lautstärke, Tonhöhe & Tempo, Drehzahl-Charakter
 - **Geräusche**: Lautstärke von Kabine & Lüfter, Anbauteile-Klappern, Arbeitsgeräusche von Erntemaschinen, angehängte Anbaugeräte (Arbeit, Antrieb) und Anhänger (Fahr-Klappern)
 - **Dämpfung**: wie offen die Kabine klingt (bis „wie draußen“), Klangfarbe und Präsenz in der Kabine und draußen
-- **Zusatz-Sounds**: Auspuff, Motoren und Getriebe anderer Basisspiel-Fahrzeuge dazumischen
+- **Zusatz-Sounds**: Auspuff, Motoren und Getriebe anderer Basisspiel-Fahrzeuge dazumischen, Motoren aus Mods und DLCs
 - **Vorschau** bei jeder Drehzahl / Last im Stand, **Original anhören** zum Vergleich
 - Einstellungen für **alle Fahrzeuge** oder **ein Fahrzeug-Modell**, relativ zum Original-Sound (100 % = Original)
 - Gespeichert pro Spielstand; Mehrspieler: jeder Spieler hat eigene Einstellungen, nichts wird synchronisiert
@@ -120,7 +122,8 @@ Ausführliche Anleitung: **[docs/ANLEITUNG.md](docs/ANLEITUNG.md)**
   Icon, `src/`, `l10n/`, `gui/` und `sounds/` (nur Dateitypen, die das Spiel lädt, wie es der GIANTS-TestRunner
   verlangt).
 - Ladereihenfolge der Lua-Dateien: `modDesc.xml` (`extraSourceFiles`). Zusatz-Sounds: Katalog `sounds/layers.xml`, nur
-  Basisspiel-Sounds über `$data/...`.
+  Basisspiel-Sounds über `$data/...`; Motoren anderer Fahrzeuge (`src/ModEngines.lua`) werden beim Laden der Karte aus
+  deren installierten Sound-Dateien gelesen, nichts wird kopiert.
 - Icon: `tools/make_icon.ps1` legt `assets/icon_source_transparent.png` auf die offizielle ModHub-Icon-Vorlage von
   GIANTS (hier nicht enthalten, bei GIANTS erhältlich).
 - Meldungen der Mod stehen in `Dokumente\My Games\FarmingSimulator2025\log.txt` mit dem Präfix
@@ -158,6 +161,7 @@ bisherigen Arbeitsweise, Code von Hand zu schreiben, zu vergleichen und den Umga
 [GNU GPL v3](LICENSE) © 2026 Emme92: Du darfst den Code nutzen, ändern und weitergeben. Wer eine veränderte Fassung
 oder eine Mod mit diesem Code weitergibt, muss sie ebenfalls unter der GPL v3 und mit Quellcode veröffentlichen und
 Änderungen kenntlich machen. Gilt für die eigenen Dateien dieser Mod. Sounds und Templates aus dem Basisspiel werden
-nur über `$data/...` referenziert und gehören GIANTS Software. Das Mod-Zip enthält keine `LICENSE`-Datei (der ModHub
+nur über `$data/...` referenziert und gehören GIANTS Software; Motoren anderer Mods und DLCs werden zur Laufzeit aus
+deren installierten Dateien geladen und gehören ihren Autoren. Das Mod-Zip enthält keine `LICENSE`-Datei (der ModHub
 erlaubt nur Spiel-Dateitypen); jede Lua-Datei und die Mod-Beschreibung tragen den GPL-Hinweis mit Link zum
 Lizenztext.

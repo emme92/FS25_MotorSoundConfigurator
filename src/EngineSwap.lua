@@ -21,6 +21,10 @@ MotorSoundConfigurator.swapEngines = nil
 -- button text of a swap engine: l10n msc_swap_<layer> if there is one (names with words to translate, e.g. "Truck"),
 -- otherwise shortName of the catalog, otherwise the source vehicle
 function MotorSoundConfigurator.getSwapEngineName(layer)
+    -- engines from mods and DLCs: the shortened store name (ModEngines.lua)
+    if layer.isModEngine then
+        return layer.shortName
+    end
     local key = "msc_swap_" .. layer.name
     if g_i18n ~= nil and g_i18n:hasText(key) then
         return g_i18n:getText(key)
@@ -84,8 +88,14 @@ function MotorSoundConfigurator.isSwapOwnVolume(modelKey)
 end
 
 
--- engine of the swap group set for the model (also mixed in without a muted own engine): catalog layer and its
--- volume, or nil
+-- the two groups whose engines are swap engines: base game catalog "engine" and the mod engines
+function MotorSoundConfigurator.isSwapGroup(groupName)
+    return groupName == MotorSoundConfigurator.SWAP_GROUP or groupName == MotorSoundConfigurator.MOD_ENGINE_GROUP
+end
+
+
+-- engine of a swap group set for the model (also mixed in without a muted own engine): catalog layer and its
+-- volume, or nil; base game engines first, then the mod engines (only available ones)
 function MotorSoundConfigurator.getSwapEngineLayer(modelKey)
     local modelLayers = MotorSoundConfigurator.getModelLayers(modelKey)
     if modelLayers == nil then
@@ -96,7 +106,33 @@ function MotorSoundConfigurator.getSwapEngineLayer(modelKey)
             return layer, modelLayers[layer.name].volume
         end
     end
+    -- the lowest name, so the result does not depend on the table order (a model normally has one); no temporary
+    -- table, this runs on every apply (isSwapDonorMissing)
+    local modName = nil
+    for layerName, _ in pairs(modelLayers) do
+        if MotorSoundConfigurator.modEnginesByName[layerName] ~= nil and (modName == nil or layerName < modName) then
+            modName = layerName
+        end
+    end
+    if modName ~= nil then
+        return MotorSoundConfigurator.modEnginesByName[modName], modelLayers[modName].volume
+    end
     return nil, nil
+end
+
+
+-- an engine of a swap group is set for the model, counting mod engines whose donor is missing
+function MotorSoundConfigurator.hasSwapEngine(modelKey)
+    return MotorSoundConfigurator.getSwapEngineLayer(modelKey) ~= nil or MotorSoundConfigurator.hasMissingModEngine(modelKey)
+end
+
+
+-- swap to a mod engine whose donor is missing (mod removed, multiplayer client without it): own engine at the 0 % of
+-- the swap and no available swap engine. The swap is inactive then, applyToVehicleData plays the own engine at the
+-- volume it would have without the swap (user 2026-10-20: not silent); the entry stays in the settings
+function MotorSoundConfigurator.isSwapDonorMissing(modelKey)
+    return MotorSoundConfigurator.isSwapOwnVolume(modelKey) and MotorSoundConfigurator.hasMissingModEngine(modelKey)
+        and MotorSoundConfigurator.getSwapEngineLayer(modelKey) == nil
 end
 
 
@@ -114,7 +150,7 @@ end
 -- left at 0 % without an engine of the group (the engine was switched off elsewhere or removed from the catalog,
 -- review 2026-10-12 #18: otherwise the vehicle had no engine sound and "Own engine" did nothing)
 function MotorSoundConfigurator.hasSwapToRemove(modelKey)
-    return MotorSoundConfigurator.getSwapEngineLayer(modelKey) ~= nil or MotorSoundConfigurator.isSwapOwnVolume(modelKey)
+    return MotorSoundConfigurator.hasSwapEngine(modelKey) or MotorSoundConfigurator.isSwapOwnVolume(modelKey)
 end
 
 
@@ -122,7 +158,7 @@ end
 -- remove): an own engine left at the 0 % of a swap goes back to "(global)" as well (review #18, user 2026-10-12).
 -- Returns true if the engine volume was changed (the caller applies it)
 function MotorSoundConfigurator.endSwapWithoutEngine(vehicleData)
-    if MotorSoundConfigurator.getSwapEngineLayer(vehicleData.modelKey) ~= nil or not MotorSoundConfigurator.isSwapOwnVolume(vehicleData.modelKey) then
+    if MotorSoundConfigurator.hasSwapEngine(vehicleData.modelKey) or not MotorSoundConfigurator.isSwapOwnVolume(vehicleData.modelKey) then
         return false
     end
     MotorSoundConfigurator.setModelValue(vehicleData, MotorSoundConfigurator.CATEGORY_MOTOR, "volume", nil)
@@ -134,11 +170,16 @@ end
 -- of the own engine (group OWN_ENGINE_GROUP, e.g. preset "More bass") are switched off too, they would keep the own
 -- engine audible (review #27, user 2026-10-12). False if the layer is not in the catalog
 function MotorSoundConfigurator.applySwap(vehicleData, layerName, volume)
-    if MotorSoundConfigurator.getCatalogLayer(layerName) == nil then
+    local catalogLayer = MotorSoundConfigurator.getCatalogLayer(layerName)
+    if catalogLayer == nil then
         return false
     end
-    -- synced by setGroupLayer below
+    -- synced by setGroupLayer below; one swap engine at a time: the engines of the other swap group go as well (base
+    -- game vs. mods & DLCs, v1.1.0.0), setGroupLayer clears the own group
     MotorSoundConfigurator.clearLayerGroup(vehicleData, MotorSoundConfigurator.OWN_ENGINE_GROUP, nil, true)
+    local otherGroup = catalogLayer.group == MotorSoundConfigurator.MOD_ENGINE_GROUP and MotorSoundConfigurator.SWAP_GROUP
+        or MotorSoundConfigurator.MOD_ENGINE_GROUP
+    MotorSoundConfigurator.clearLayerGroup(vehicleData, otherGroup, nil, true)
     if not MotorSoundConfigurator.setGroupLayer(vehicleData, layerName, volume or MotorSoundConfigurator.SWAP_DEFAULT_VOLUME) then
         return false
     end
@@ -153,5 +194,24 @@ function MotorSoundConfigurator.removeSwap(vehicleData)
     if MotorSoundConfigurator.isSwapOwnVolume(vehicleData.modelKey) then
         MotorSoundConfigurator.setModelValue(vehicleData, MotorSoundConfigurator.CATEGORY_MOTOR, "volume", nil)
     end
-    MotorSoundConfigurator.clearLayerGroup(vehicleData, MotorSoundConfigurator.SWAP_GROUP, nil)
+    -- both swap groups, mod engines with a missing donor included (one sync at the end)
+    MotorSoundConfigurator.clearLayerGroup(vehicleData, MotorSoundConfigurator.MOD_ENGINE_GROUP, nil, true)
+    MotorSoundConfigurator.clearLayerGroup(vehicleData, MotorSoundConfigurator.SWAP_GROUP, nil, true)
+    MotorSoundConfigurator.syncLayers(vehicleData.modelKey)
+end
+
+
+-- removes the model's mod engines whose donor is missing (hint on the swap tab, user 2026-10-20); a swap whose engine
+-- that was ends as well (own engine back from 0 %). True if something was removed
+function MotorSoundConfigurator.removeMissingModEngines(vehicleData)
+    local names = MotorSoundConfigurator.getMissingModEngines(vehicleData.modelKey)
+    if #names == 0 then
+        return false
+    end
+    for _, layerName in ipairs(names) do
+        MotorSoundConfigurator.setModelLayer(vehicleData, layerName, nil, true)
+    end
+    MotorSoundConfigurator.endSwapWithoutEngine(vehicleData)
+    MotorSoundConfigurator.syncLayers(vehicleData.modelKey)
+    return true
 end

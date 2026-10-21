@@ -105,9 +105,29 @@ function MotorSoundConfigurator.loadLayerCatalog()
 
     MotorSoundConfigurator.layerCatalog = catalog
     MotorSoundConfigurator.layerGroups = groups
+    MotorSoundConfigurator.addModEngineGroup()
     -- sorted list of the engine swap tab, built again from the new catalog (EngineSwap.lua)
     MotorSoundConfigurator.swapEngines = nil
     MotorSoundConfigurator.log("Layer catalog: %d layers in %d groups", #catalog, #groups)
+end
+
+
+-- the engines from mods and DLCs (ModEngines.lua) as their own group right after the group "engine" (dialog row
+-- "Engine (mods & DLCs)" below "Engine"); not added without mod engines. They are not in layerCatalog (getCatalogLayer
+-- finds them by name)
+function MotorSoundConfigurator.addModEngineGroup()
+    local engines = MotorSoundConfigurator.modEngines
+    if engines == nil or #engines == 0 then
+        return
+    end
+    local group = { name = MotorSoundConfigurator.MOD_ENGINE_GROUP, layers = engines }
+    local position = #MotorSoundConfigurator.layerGroups + 1
+    for index, existing in ipairs(MotorSoundConfigurator.layerGroups) do
+        if existing.name == MotorSoundConfigurator.SWAP_GROUP then
+            position = index + 1
+        end
+    end
+    table.insert(MotorSoundConfigurator.layerGroups, position, group)
 end
 
 
@@ -121,6 +141,10 @@ end
 
 
 function MotorSoundConfigurator.getCatalogLayer(layerName)
+    -- engines from mods and DLCs (ModEngines.lua); nil if the donor is missing
+    if MotorSoundConfigurator.isModEngineName(layerName) then
+        return MotorSoundConfigurator.modEnginesByName[layerName]
+    end
     -- normally loaded in loadMap; vehicles loading earlier would find it empty
     if #MotorSoundConfigurator.layerCatalog == 0 then
         MotorSoundConfigurator.loadLayerCatalog()
@@ -248,7 +272,8 @@ function MotorSoundConfigurator.syncVehicleLayers(data)
     end
 
     for layerName, layerSettings in pairs(wanted) do
-        if data.layers[layerName] == nil then
+        -- an engine whose mod / DLC is missing stays in the settings without sound (warned once in loadSettings)
+        if data.layers[layerName] == nil and not MotorSoundConfigurator.isModEngineMissing(layerName) then
             local message = MotorSoundConfigurator.addLayer(data, data.vehicle, layerName)
             if data.layers[layerName] == nil then
                 MotorSoundConfigurator.logWarning("%s", message)
@@ -257,7 +282,9 @@ function MotorSoundConfigurator.syncVehicleLayers(data)
             end
         end
         if data.layers[layerName] ~= nil then
-            data.layers[layerName].entry.layerVolume = layerSettings.volume
+            for _, entry in ipairs(data.layers[layerName].entries) do
+                entry.layerVolume = layerSettings.volume
+            end
         end
     end
 
@@ -283,7 +310,9 @@ end
 
 
 -- adds the catalog layer to the vehicle's motorSamples: Motorized starts / stops it with the motor, updates rpm / load
--- every frame and deletes it with the vehicle; the mod's factors apply like for the vehicle's own samples.
+-- every frame and deletes it with the vehicle; the mod's factors apply like for the vehicle's own samples. A layer holds
+-- a list of samples (one for the catalog layers, all engine samples of the donor for a mod engine), each with its own
+-- entry: the layer volume is a common factor on their original volumes, so their ratio stays as in the donor.
 -- Returns a message for the log / console.
 function MotorSoundConfigurator.addLayer(data, vehicle, layerName)
     if data.layers[layerName] ~= nil then
@@ -306,32 +335,42 @@ function MotorSoundConfigurator.addLayer(data, vehicle, layerName)
         return string.format("Layer '%s': %s has no suspensions specialization", layerName, tostring(data.name))
     end
 
-    local xmlFile, path = MotorSoundConfigurator.getLayerXmlFile()
-    if xmlFile == nil then
-        return "Cannot open " .. path
-    end
-    local key = string.format("layers.layer(%d)", catalogLayer.index)
-    local sample, err
-    if catalogLayer.isOwn then
-        -- returns nil and a reason if there is no engine sample to clone or cloneSample fails
-        sample, err = MotorSoundConfigurator.cloneOwnEngine(data, vehicle, catalogLayer, xmlFile, key)
+    local samples, err
+    if catalogLayer.isModEngine then
+        samples, err = MotorSoundConfigurator.loadModEngineSamples(vehicle, catalogLayer)
     else
-        sample = g_soundManager:loadSampleFromXML(xmlFile, key, "motor", MotorSoundConfigurator.modDirectory, vehicle.components, 0,
-            AudioGroup.VEHICLE, vehicle.i3dMappings, vehicle)
+        local xmlFile, path = MotorSoundConfigurator.getLayerXmlFile()
+        if xmlFile == nil then
+            return "Cannot open " .. path
+        end
+        local key = string.format("layers.layer(%d)", catalogLayer.index)
+        local sample
+        if catalogLayer.isOwn then
+            -- returns nil and a reason if there is no engine sample to clone or cloneSample fails
+            sample, err = MotorSoundConfigurator.cloneOwnEngine(data, vehicle, catalogLayer, xmlFile, key)
+        else
+            sample = g_soundManager:loadSampleFromXML(xmlFile, key, "motor", MotorSoundConfigurator.modDirectory, vehicle.components, 0,
+                AudioGroup.VEHICLE, vehicle.i3dMappings, vehicle)
+        end
+        samples = sample ~= nil and { sample } or nil
     end
 
-    if sample == nil then
+    if samples == nil or #samples == 0 then
         return string.format("Layer '%s' could not be loaded: %s", layerName, err or "see log")
     end
 
-    table.insert(spec.motorSamples, sample)
-
-    local category = catalogLayer.category or MotorSoundConfigurator.getSampleCategory(sample, false) or MotorSoundConfigurator.CATEGORY_MOTOR
-    local entry = MotorSoundConfigurator.createEntry(sample, category)
-    -- never used as source of an "own engine" layer
-    entry.isLayer = true
-    table.insert(data.entries, entry)
-    data.layers[layerName] = { sample = sample, entry = entry }
+    local entries = {}
+    local category = nil
+    for _, sample in ipairs(samples) do
+        table.insert(spec.motorSamples, sample)
+        category = catalogLayer.category or MotorSoundConfigurator.getSampleCategory(sample, false) or MotorSoundConfigurator.CATEGORY_MOTOR
+        local entry = MotorSoundConfigurator.createEntry(sample, category)
+        -- never used as source of an "own engine" layer
+        entry.isLayer = true
+        table.insert(data.entries, entry)
+        table.insert(entries, entry)
+    end
+    data.layers[layerName] = { samples = samples, entries = entries }
     MotorSoundConfigurator.applyToVehicleData(data)
 
     -- Motorized starts its samples when the motor starts; a layer added while the motor runs is started here. During
@@ -339,13 +378,16 @@ function MotorSoundConfigurator.addLayer(data, vehicle, layerName)
     -- started without it: it is started once the motor is ON, unless it plays by then (review #25)
     local isRunning = vehicle:getIsMotorStarted()
     if isRunning then
-        g_soundManager:playSample(sample)
+        for _, sample in ipairs(samples) do
+            g_soundManager:playSample(sample)
+        end
     elseif vehicle.getMotorState ~= nil and vehicle:getMotorState() == MotorState.STARTING then
         data.pendingLayerStarts = data.pendingLayerStarts or {}
         table.insert(data.pendingLayerStarts, layerName)
     end
 
-    return string.format("Layer '%s' (%s) attached to %s, motor running: %s", layerName, category, data.name, tostring(isRunning))
+    return string.format("Layer '%s' (%s, %d samples) attached to %s, motor running: %s", layerName, tostring(category), #samples, data.name,
+        tostring(isRunning))
 end
 
 
@@ -360,8 +402,10 @@ function MotorSoundConfigurator.startPendingLayers(data, vehicle)
         for _, layerName in ipairs(data.pendingLayerStarts) do
             -- removed again meanwhile: no entry any more
             local layer = data.layers[layerName]
-            if layer ~= nil and not g_soundManager:getIsSamplePlaying(layer.sample) then
-                g_soundManager:playSample(layer.sample)
+            for _, sample in ipairs(layer ~= nil and layer.samples or {}) do
+                if not g_soundManager:getIsSamplePlaying(sample) then
+                    g_soundManager:playSample(sample)
+                end
             end
         end
     end
@@ -375,10 +419,14 @@ function MotorSoundConfigurator.removeLayer(data, vehicle, layerName)
         return string.format("Layer '%s' is not attached", tostring(layerName))
     end
 
-    g_soundManager:stopSample(layer.sample)
-    table.removeElement(vehicle.spec_motorized.motorSamples, layer.sample)
-    table.removeElement(data.entries, layer.entry)
-    g_soundManager:deleteSample(layer.sample)
+    for _, sample in ipairs(layer.samples) do
+        g_soundManager:stopSample(sample)
+        table.removeElement(vehicle.spec_motorized.motorSamples, sample)
+        g_soundManager:deleteSample(sample)
+    end
+    for _, entry in ipairs(layer.entries) do
+        table.removeElement(data.entries, entry)
+    end
     data.layers[layerName] = nil
 
     return string.format("Layer '%s' removed from %s", layerName, data.name)
